@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Blog</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    My Blog
+  </header>
+
+  <div class="container" id="posts"></div>
+
+  <footer>
+    © 2026 My Blog
+  </footer>
+
+  <script>
+    fetch("/posts")
+      .then(res => res.json())
+      .then(posts => {
+        const div = document.getElementById("posts");
+        posts.forEach((p, index) => {
+          div.innerHTML += `
+            <div class="post">
+              <h2>
+                <a href="post.html?id=${index}" style="text-decoration:none;color:#333;">
+                  ${p.title}
+                </a>
+              </h2>
+              <p>${p.content.substring(0, 150)}...</p>
+            </div>
+          `;
+        });
+      });
+  </script>
+
+</body>
+</html>
+

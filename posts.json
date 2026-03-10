@@ -1,0 +1,415 @@
+[
+  {
+    "name": "ADIDAS ADIZERO ADIOS PRO 4 ",
+    "brand": "ADIDAS",
+    "originalPrice": 25000,
+    "price": 25000,
+    "discount": null,
+    "category": "Running",
+    "categoryId": "",
+    "subcategory": "",
+    "stock": 21,
+    "sizeStock": {
+      "UK6": 0,
+      "UK7": 4,
+      "UK8": 6,
+      "UK9": 10,
+      "UK10": 0,
+      "UK11": 1,
+      "UK12": 0
+    },
+    "description": "LIGHTWEIGHT DISTANCE RUNNING SHOES DESIGNED TO BREAK RECORDS\r\nProven to be the world's most winning shoe, the Adizero Adios Pro line is the pinnacle of Adizero Racing shoes. The Adios Pro 4 is made for fast runners who want to experience faster, with enhanced features designed to optimize running efficiency. Our carbon-infused ENERGYRODS 2.0 provide a seamless transition from heel to toe for a snappy, efficient stride. In the midsole, a new rocker point offers improved running economy. A double layer of our best-in-class ultralight LIGHTSTRIKE PRO ensures cushioning for every quick stride you take, helping you maintain energy over the long term. The shoe rides on an outsole built with Continental™ rubber for a no-slip transition during toe-off, as well as LIGHTTRAXION, designed to reduce weight without sacrificing grip.",
+    "colors": [
+      "GREEN"
+    ],
+    "images": [
+      "/uploads/1771250227662-WhatsApp Image 2026-02-16 at 18.11.52.jpeg",
+      "/uploads/1771250251495-WhatsApp Image 2026-02-16 at 18.11.52 (2).jpeg",
+      "/uploads/1771250265044-WhatsApp Image 2026-02-16 at 18.11.52 (1).jpeg"
+    ],
+    "featured": false,
+    "showInNewArrivals": true,
+    "showInBestSellers": false,
+    "active": true,
+    "slug": "adidas-adizero-adios-pro-4",
+    "createdAt": "2026-02-16T13:04:45.646Z",
+    "updatedAt": "2026-03-07T07:10:32.493Z"
+  },
+  {
+    "name": "NIKE VAPOURFLY 4 SILVER",
+    "originalPrice": 20000,
+    "price": 17000,
+    "discount": {
+      "type": "percentage",
+      "value": 15
+    },
+    "category": "Running",
+    "stock": 8,
+    "sizeStock": {
+      "UK 6": 2,
+      "UK 7": 0,
+      "UK 8": 5,
+      "UK 9": 2,
+      "UK 10": 0,
+      "UK 11": 0,
+      "UK 12": 0
+    },
+    "description": "Product Code\tHF6414-100\r\nBrand\tNike\r\nColour\tGrey\r\nManufacturer Colour\tWhite/Obsidian Mist/Pure Platinum/Gridiron\r\nGender\tUnisex\r\nFootwear Type\tLightweight & Racers\r\n",
+    "colors": [
+      "SILVER"
+    ],
+    "images": [
+      "/uploads/1771249988085-WhatsApp Image 2026-02-16 at 18.11.59.jpeg",
+      "/uploads/1771250001658-WhatsApp Image 2026-02-16 at 18.11.59 (2).jpeg",
+      "/uploads/1771250036499-WhatsApp Image 2026-02-16 at 18.11.59 (1).jpeg"
+    ],
+    "featured": true,
+    "active": true,
+    "slug": "nike-vapourfly-4-silver",
+    "createdAt": "2026-02-16T13:52:21.786Z",
+    "updatedAt": "2026-02-16T13:53:56.502Z"
+  },
+  {
+    "name": "NIKE VAPOURFLY 4 ",
+    "brand": "NIKE",
+    "originalPrice": 20000,
+    "price": 17000,
+    "discount": {
+      "type": "percentage",
+      "value": 15
+    },
+    "category": "Running",
+    "categoryId": "",
+    "subcategory": "",
+    "stock": 18,
+    "sizeStock": {
+      "UK 6": 5,
+      "UK 7": 3,
+      "UK 8": 7,
+      "UK 9": 0,
+      "UK 10": 4,
+      "UK 11": 1,
+      "UK 12": 0
+    },
+    "description": "The Vaporfly 4 is a mile-eating machine that just got lighter. We trimmed weight with a carbon fiber Flyplate and ultra-responsive ZoomX foam midsole to give you race-day speed without sacrificing performance. The result is a fine-tuned racing shoe that’s trusted from the mile to the marathon.\r\n\r\nFull Speed\r\n\r\nThe full-length carbon fiber Flyplate has a higher angle than the Vaporfly 3 and combines with a lower heel-to-toe drop to give you a propulsive feel on race day.\r\n\r\nLighter Foam\r\n\r\nNike ZoomX, our most responsive",
+    "colors": [
+      "WHITE BLUE"
+    ],
+    "images": [
+      "/uploads/1771250580657-WhatsApp Image 2026-02-16 at 18.11.41 (2).jpeg",
+      "/uploads/1771250605001-WhatsApp Image 2026-02-16 at 18.11.41 (4).jpeg",
+      "/uploads/1771250627230-WhatsApp Image 2026-02-16 at 18.11.41 (3).jpeg",
+      "/uploads/1771250640978-WhatsApp Image 2026-02-16 at 18.11.41 (1).jpeg"
+    ],
+    "featured": false,
+    "showInNewArrivals": false,
+    "showInBestSellers": true,
+    "active": true,
+    "slug": "nike-vapourfly-4",
+    "createdAt": "2026-02-16T14:03:00.661Z",
+    "updatedAt": "2026-02-17T17:26:47.990Z"
+  },
+  {
+    "name": "NIKE VAPOURFLY 4 ",
+    "originalPrice": 22000,
+    "price": 17600,
+    "discount": {
+      "type": "percentage",
+      "value": 20
+    },
+    "category": "Running",
+    "stock": 18,
+    "sizeStock": {
+      "UK 6": 2,
+      "UK 7": 5,
+      "UK 8": 6,
+      "UK 9": 3,
+      "UK 10": 1,
+      "UK 11": 0,
+      "UK 12": 1
+    },
+    "description": "The Vaporfly 4 is a mile-eating machine that just got lighter. We trimmed weight with a carbon fiber Flyplate and ultra-responsive ZoomX foam midsole to give you race-day speed without sacrificing performance. The result is a fine-tuned racing shoe that’s trusted from the mile to the marathon.\r\n\r\nFull Speed\r\n\r\nThe full-length carbon fiber Flyplate has a higher angle than the Vaporfly 3 and combines with a lower heel-to-toe drop to give you a propulsive feel on race day.\r\n\r\nLighter Foam\r\n\r\nNike ZoomX, our most responsive foam, just got lighter. Running from heel to toe, it unlocks even more energy return than before thanks to a slight midsole reduction, giving you a bouncy, feathery feel.\r\n\r\nLess Weight\r\n\r\nEngineered mesh on the upper offers improved lightweight comfort while supplying a more consistent fit. We reduced the size of the heel and tongue to save even more weight.\r\n\r\nLight Feel\r\n\r\nThe midsole bulge at the heel helps reduce weight on the inside of the foot and give you a more stable ride. We reduced the weight of the outsole by using a thinner rubber compared to the Vaporfly 3.\r\n\r\nWhat's New About the Vaporfly 4?\r\n\r\nWe made minor tweaks so you can enjoy major gains. We trimmed inessential weight in the upper, midsole and outsole without sacrificing performance.",
+    "colors": [
+      "RED"
+    ],
+    "images": [
+      "/uploads/1771296518073-WhatsApp Image 2026-02-16 at 18.11.34 (3).jpeg",
+      "/uploads/1771296540463-WhatsApp Image 2026-02-16 at 18.11.34 (1).jpeg",
+      "/uploads/1771297230520-WhatsApp Image 2026-02-16 at 18.11.34 (2).jpeg"
+    ],
+    "featured": true,
+    "active": true,
+    "slug": "nike-vapourfly-4",
+    "createdAt": "2026-02-17T02:48:38.078Z",
+    "updatedAt": "2026-02-17T03:00:30.528Z"
+  },
+  {
+    "name": "ADIDAS TAKUMI SEN 10 ",
+    "brand": "ADIDAS",
+    "originalPrice": 10499.25,
+    "price": 7874.4375,
+    "discount": {
+      "type": "percentage",
+      "value": 25
+    },
+    "category": "Running",
+    "categoryId": "",
+    "subcategory": "",
+    "stock": 21,
+    "sizeStock": {
+      "UK 6": 3,
+      "UK 7": 0,
+      "UK 8": 9,
+      "UK 9": 6,
+      "UK 10": 2,
+      "UK 11": 0,
+      "UK 12": 1
+    },
+    "description": "Adizero Takumi Sen 10 Sneakers\r\nThese running shoes are made from recycled materials and are built for speed.\r\n\r\nWhen milliseconds matter, these shoes from adidas are built for speed. Lightning-fast Lightstrike cushioning keeps your feet light until the finish line, while ENERGYRODS reduce energy loss so you can maintain your pace. The adizero Takumi Sen is a shoe for runners who never stop striving for speed. This product contains at least 20% recycled content. Reusing materials that have already been created helps us reduce waste, reduce our dependence on limited resources, and reduce the environmental impact of our products.",
+    "colors": [
+      "red"
+    ],
+    "images": [
+      "/uploads/1771336123574-WhatsApp Image 2026-02-17 at 08.27.32 (1).jpeg",
+      "/uploads/1771336167327-WhatsApp Image 2026-02-17 at 08.27.33 (2).jpeg",
+      "/uploads/1771336181986-WhatsApp Image 2026-02-17 at 08.27.32.jpeg",
+      "/uploads/1771336194082-WhatsApp Image 2026-02-17 at 08.27.33 (1).jpeg"
+    ],
+    "featured": true,
+    "showInNewArrivals": false,
+    "showInBestSellers": false,
+    "active": true,
+    "slug": "adidas-takumi-sen-10",
+    "createdAt": "2026-02-17T13:48:43.589Z",
+    "updatedAt": "2026-02-25T13:47:24.569Z"
+  },
+  {
+    "name": "ADIDAS ADIZERO PRIME FINESSE 2 SE",
+    "brand": "ADIDAS",
+    "originalPrice": 18500,
+    "price": 13875,
+    "discount": {
+      "type": "percentage",
+      "value": 25
+    },
+    "category": "SPIKES",
+    "categoryId": "1771337659331",
+    "subcategory": "SPRINT",
+    "stock": 24,
+    "sizeStock": {
+      "UK 3": 0,
+      "UK 4": 2,
+      "UK 5": 4,
+      "UK 6": 3,
+      "UK 7": 8,
+      "UK 8": 0,
+      "UK 9": 1,
+      "UK 10": 6,
+      "UK 11": 0,
+      "UK 12": 0
+    },
+    "description": "All about the adidas Adizero Finesse\r\nYou are the boss in the 200 and 400 meters with the adidas Adizero Finesse for women and men. This ultra-light spike shoe is made for fast sprints on the track.\r\n\r\nBenefit from the Celermesh synthetic upper that hugs your feet firmly but comfortably. The Celermesh upper also provides the necessary support when you fly through the bend, while the spike plate ensures a smooth transition and sufficient grip.",
+    "colors": [
+      "GREEN"
+    ],
+    "images": [
+      "/uploads/1771336643728-WhatsApp Image 2026-02-17 at 19.16.15 (1).jpeg"
+    ],
+    "featured": true,
+    "active": true,
+    "slug": "adidas-adizero-prime-finesse-2-se",
+    "createdAt": "2026-02-17T13:57:23.735Z",
+    "updatedAt": "2026-02-17T14:15:58.675Z"
+  },
+  {
+    "name": "NIKE VICTORY 2",
+    "brand": "NIKE",
+    "originalPrice": 18499,
+    "price": 14984.19,
+    "discount": {
+      "type": "percentage",
+      "value": 19
+    },
+    "category": "SPIKES",
+    "categoryId": "",
+    "subcategory": "MIDDLE DISTANCE",
+    "stock": 19,
+    "sizeStock": {
+      "UK 4": 0,
+      "UK 5": 0,
+      "UK 6": 3,
+      "UK 7": 5,
+      "UK 8": 3,
+      "UK 9": 6,
+      "UK 10": 1,
+      "UK 11": 1,
+      "UK 12": 0
+    },
+    "description": "The Victory 2 is tested and validated by the best middle-distance runners sprinting the planet. It sports every speed component you need to smash records, from a carbon fibre Flyplate to Air Zoom unit to a lightweight, responsive ZoomX midsole. AtomKnit on the upper and midfoot containment cables are combined with a supportive base that delivers improved shoe stability and control, especially around the turns.\r\n\r\nStable for straightaways\r\n\r\nFocused on helping keep you stable, the supportive base creates a wider flat area compared with the original Victory on the bottom of the plate. We removed two spikes seen on the original, in favour of a four-spike design. And we elevated the big-toe side platform to help the spikes feel more stable on the straightaways and especially around the turns.\r\n\r\nBuilt for speed\r\n\r\nThe full-length carbon fibre Flyplate is tuned to match the base of the support system. Its shape and stiffness give a propulsive feel to help keep you on your toes and minimise deceleration. The new plate material is lighter and more responsive than the previous version. It also improves the durability of the outer traction plate.\r\n\r\nUltra-lightweight upper\r\n\r\nAtomKnit, an updated version of Flyknit, has a lightweight, contoured fit and enhanced breathability. It works with a new knit structure and midfoot containment cables to give you an ultra-lightweight upper.\r\n\r\nZoom, zoom\r\n\r\nThe forefoot Air Zoom unit has two chambers to give you propulsion and stability from take-off to the tape.",
+    "colors": [
+      "WHITE"
+    ],
+    "images": [
+      "/uploads/1771338084937-WhatsApp Image 2026-02-17 at 19.40.41.jpeg"
+    ],
+    "featured": false,
+    "showInNewArrivals": false,
+    "showInBestSellers": false,
+    "active": true,
+    "slug": "nike-victory-2",
+    "createdAt": "2026-02-17T14:21:24.958Z",
+    "updatedAt": "2026-02-17T17:26:22.498Z"
+  },
+  {
+    "name": "NIKE MACHOMAI 2",
+    "brand": "NIKE",
+    "originalPrice": 10999,
+    "price": 10999,
+    "discount": null,
+    "category": "Boxing",
+    "categoryId": "",
+    "subcategory": "",
+    "stock": 3,
+    "sizeStock": {
+      "UK 6": 1,
+      "UK 7": 0,
+      "UK 8": 0,
+      "UK 9": 2,
+      "UK 10": 0,
+      "UK 11": 0,
+      "UK 12": 0
+    },
+    "description": "Experience unrivaled agility and support with Nike Machomai 2 Boxing Shoes. These shoes feature a breathable mesh upper for optimal ventilation and a Phylon midsole for responsive cushioning. The durable rubber outsole provides superior traction, while the dynamic fit system ensures a secure and customized fit. Their striking 'White Metallic Gold Cool Grey' colorway exudes both style and performance. Elevate your boxing game with these cutting-edge shoes designed to empower every move you make.",
+    "colors": [
+      "WHITE GOLD"
+    ],
+    "images": [
+      "/uploads/1771420774742-WhatsApp Image 2026-02-18 at 18.22.05 (2).jpeg",
+      "/uploads/1771420812148-WhatsApp Image 2026-02-18 at 18.22.04 (1).jpeg",
+      "/uploads/1771420826385-WhatsApp Image 2026-02-18 at 18.22.05.jpeg",
+      "/uploads/1771420842616-WhatsApp Image 2026-02-18 at 18.22.04.jpeg"
+    ],
+    "featured": false,
+    "showInNewArrivals": false,
+    "showInBestSellers": false,
+    "active": true,
+    "slug": "nike-machomai-2",
+    "createdAt": "2026-02-18T13:19:34.754Z",
+    "updatedAt": "2026-02-18T13:20:42.620Z"
+  },
+  {
+    "name": "ADIDAS ADIZERO EVO SL RUNNING",
+    "brand": "ADIDAS",
+    "originalPrice": 10999,
+    "price": 10999,
+    "discount": null,
+    "category": "Running",
+    "categoryId": "",
+    "subcategory": "Running Shoes",
+    "stock": 11,
+    "sizeStock": {
+      "UK 6": 2,
+      "UK 7": 3,
+      "UK 8": 5,
+      "UK 9": 0,
+      "UK 10": 1,
+      "UK 11": 0,
+      "UK12": 0
+    },
+    "description": "The Adidas Adizero Evo SL is a lightweight performance running shoe designed for speed training, tempo runs, and daily road running. Inspired by adidas’ elite Adizero racing line, the Evo SL delivers a fast, responsive ride for runners who want race-day energy in a training shoe.\r\n\r\nBuilt with Lightstrike Pro midsole cushioning, the Adizero Evo SL offers excellent energy return, shock absorption, and lightweight comfort, helping you maintain pace over short to mid-distance runs. The engineered mesh upper ensures breathability, flexibility, and a secure fit, keeping your feet cool and locked in during high-intensity workouts.\r\n\r\nThe durable rubber outsole provides strong road grip and traction, making these shoes ideal for urban running, treadmill workouts, and speed sessions. With a sleek silhouette and modern adidas design, the Evo SL seamlessly blends performance running technology with a stylish athletic look.\r\n\r\nWhether you’re training for a 5K, 10K, half marathon, or looking for a fast daily trainer, the Adidas Adizero Evo SL running shoes for men and women deliver speed, comfort, and durability in every stride.",
+    "colors": [
+      "LUCID BLUE"
+    ],
+    "images": [
+      "/uploads/1771421273013-WhatsApp Image 2026-02-18 at 18.47.28.jpeg",
+      "/uploads/1771421285443-WhatsApp Image 2026-02-18 at 18.47.29.jpeg",
+      "/uploads/1771421298061-WhatsApp Image 2026-02-18 at 18.47.28 (1).jpeg",
+      "/uploads/1771421309264-WhatsApp Image 2026-02-18 at 18.47.29 (1).jpeg"
+    ],
+    "featured": false,
+    "showInNewArrivals": false,
+    "showInBestSellers": false,
+    "active": true,
+    "slug": "adidas-adizero-evo-sl-running",
+    "createdAt": "2026-02-18T13:27:53.018Z",
+    "updatedAt": "2026-02-18T13:28:29.267Z"
+  },
+  {
+    "name": "ADIDAS TAKUMI SEN 11",
+    "brand": "ADIDAS",
+    "originalPrice": 18900,
+    "price": 15876,
+    "discount": {
+      "type": "percentage",
+      "value": 16
+    },
+    "category": "Running",
+    "categoryId": "",
+    "subcategory": "",
+    "stock": 8,
+    "sizeStock": {
+      "UK 6": 0,
+      "UK 7": 0,
+      "UK 8": 0,
+      "UK 9": 0,
+      "UK 10": 6,
+      "UK 11": 1,
+      "UK 12": 1
+    },
+    "description": "Adidas Adizero Takumi Sen 11\r\nEngineered for speed and race-day performance, the Adidas Adizero Takumi Sen 11 is a lightweight running shoe built for fast 5K to 10K distances. Designed with elite-level technology, it delivers explosive energy return while maintaining a sleek, minimal feel.\r\nThe breathable mesh upper ensures a secure and comfortable fit, keeping your feet cool during intense runs. The responsive Lightstrike Pro midsole provides exceptional cushioning without added weight, helping you maintain maximum pace. Its streamlined design and bold detailing give it a sharp, performance-driven look.\r\nKey Features:\r\nUltra-lightweight racing design\r\nLightstrike Pro cushioning for high energy return\r\nBreathable mesh upper for ventilation\r\nSecure lace-up closure\r\nIdeal for speed training and race day\r\nBest For: 5K–10K races, tempo runs, and competitive road running.",
+    "colors": [
+      "WHITE"
+    ],
+    "images": [
+      "/uploads/1772018058753-940535440.jpeg",
+      "/uploads/1772018073777-36375178.jpeg",
+      "/uploads/1772018086057-864707249.jpeg"
+    ],
+    "featured": false,
+    "showInNewArrivals": false,
+    "showInBestSellers": true,
+    "active": true,
+    "slug": "adidas-takumi-sen-11",
+    "createdAt": "2026-02-25T10:30:08.618Z",
+    "updatedAt": "2026-02-25T12:46:06.563Z"
+  },
+  {
+    "name": "ADIDAS ADIZERO BOSTON 12 M",
+    "brand": "ADIDAS",
+    "originalPrice": 22500,
+    "price": 19125,
+    "discount": {
+      "type": "percentage",
+      "value": 15
+    },
+    "category": "Running",
+    "categoryId": "",
+    "subcategory": "",
+    "stock": 7,
+    "sizeStock": {
+      "UK 6": 0,
+      "UK 7": 2,
+      "UK 8": 1,
+      "UK 9": 3,
+      "UK 10": 0,
+      "UK 11": 1,
+      "UK 12": 0
+    },
+    "description": "FAST-TEMPO TRAINING SHOES WITH HIGH PERFORMANCE TECHNOLOGY.\r\nThe Boston Marathon is a race. But it's also a goal, and a training plan and all the days it stays on your mind before the big one. The Adizero Boston 12 Shoes are built for mid- to long-distance running. They bring a race-day feel to training with a propulsive feel that comes from the glass-fiber infused ENERGYRODS 2.0, which limit energy loss underfoot. They're fast, but that does not come at the cost of durability — the midsole layers ultra-light LIGHTSTRIKE PRO cushioning with a new version of durable LIGHTSTRIKE 2.0 EVA.",
+    "colors": [
+      "WHITE"
+    ],
+    "images": [
+      "/uploads/1772878384587-775955076.jpg",
+      "/uploads/1772878418930-665596275.png",
+      "/uploads/1772878443526-991940208.webp"
+    ],
+    "featured": false,
+    "showInNewArrivals": false,
+    "showInBestSellers": false,
+    "active": true,
+    "slug": "adidas-adizero-boston-12-m",
+    "createdAt": "2026-03-07T10:13:04.609Z",
+    "updatedAt": "2026-03-07T10:14:03.540Z"
+  }
+]

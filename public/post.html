@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Post</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="/" style="color:white;text-decoration:none;">← Back to Home</a>
+  </header>
+
+  <div class="container">
+    <h1 id="title"></h1>
+    <p id="content"></p>
+  </div>
+
+  <footer>
+    © 2026 My Blog
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    fetch("/posts")
+      .then(res => res.json())
+      .then(posts => {
+        const post = posts[id];
+        document.getElementById("title").innerText = post.title;
+        document.getElementById("content").innerText = post.content;
+      });
+  </script>
+
+</body>
+</html>

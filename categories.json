@@ -1,0 +1,172 @@
+[
+  {
+    "id": 1,
+    "name": "Running",
+    "slug": "running",
+    "subcategories": [
+      {
+        "id": 101,
+        "name": "Running Shoes",
+        "slug": "running-shoes"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Boxing",
+    "slug": "boxing",
+    "subcategories": [
+      {
+        "id": 201,
+        "name": "Boxing Gloves",
+        "slug": "boxing-gloves"
+      },
+      {
+        "id": 202,
+        "name": "Hand Wraps",
+        "slug": "hand-wraps"
+      },
+      {
+        "id": 203,
+        "name": "Punching Bags",
+        "slug": "punching-bags"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Wrestling",
+    "slug": "wrestling",
+    "subcategories": [
+      {
+        "id": 301,
+        "name": "Wrestling Shoes",
+        "slug": "wrestling-shoes"
+      },
+      {
+        "id": 302,
+        "name": "Singlets",
+        "slug": "singlets"
+      },
+      {
+        "id": 303,
+        "name": "Headgear",
+        "slug": "headgear"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Cricket",
+    "slug": "cricket",
+    "subcategories": [
+      {
+        "id": 401,
+        "name": "Cricket Bats",
+        "slug": "cricket-bats"
+      },
+      {
+        "id": 402,
+        "name": "Cricket Balls",
+        "slug": "cricket-balls"
+      },
+      {
+        "id": 403,
+        "name": "Protective Gear",
+        "slug": "protective-gear"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Football",
+    "slug": "football",
+    "subcategories": [
+      {
+        "id": 501,
+        "name": "Football Shoes",
+        "slug": "football-shoes"
+      },
+      {
+        "id": 502,
+        "name": "Jerseys",
+        "slug": "jerseys"
+      },
+      {
+        "id": 503,
+        "name": "Shin Guards",
+        "slug": "shin-guards"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "General",
+    "slug": "general",
+    "subcategories": [
+      {
+        "id": 601,
+        "name": "Accessories",
+        "slug": "accessories"
+      },
+      {
+        "id": 602,
+        "name": "Equipment",
+        "slug": "equipment"
+      }
+    ]
+  },
+  {
+    "id": 1771336123588,
+    "name": "Running",
+    "slug": "running",
+    "subcategories": [
+      {
+        "id": 1771336123588,
+        "name": "Cross Country",
+        "slug": "cross-country"
+      }
+    ]
+  },
+  {
+    "id": 1771336643735,
+    "name": "Running",
+    "slug": "running",
+    "subcategories": [
+      {
+        "id": 1771336643735,
+        "name": "SPRINT",
+        "slug": "sprint"
+      }
+    ]
+  },
+  {
+    "id": 1771336698978,
+    "name": "Running",
+    "slug": "running",
+    "subcategories": [
+      {
+        "id": 1771336698978,
+        "name": "SPRINT",
+        "slug": "sprint"
+      }
+    ]
+  },
+  {
+    "id": 1771337744708,
+    "name": "SPIKES",
+    "slug": "spikes",
+    "subcategories": [
+      {
+        "id": 1771337744709,
+        "name": "SPRINT",
+        "slug": "sprint"
+      },
+      {
+        "id": 1771337744710,
+        "name": "MIDDLE DISTANCE",
+        "slug": "middle-distance"
+      }
+    ]
+  }
+]

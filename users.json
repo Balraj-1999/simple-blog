@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1771338463049,
+    "name": "Vivek Chhawari",
+    "email": "vivekchhawari94@gmail.com",
+    "phone": "08168540471",
+    "password": "$2b$10$SjLUwv7V0COiuGuN2wyJBu2ITvcPqJoZmSlQ50NV.Wc7ddD5E8pY2",
+    "createdAt": "2026-02-17T14:27:43.049Z",
+    "isActive": true,
+    "role": "user",
+    "address": {
+      "street": "village- Bhudla , Near-NH48",
+      "street2": "BHUDLA STADIUM",
+      "city": "REWARI",
+      "state": "HARYANA ",
+      "pincode": "123401",
+      "country": "India"
+    },
+    "updatedAt": "2026-02-17T14:34:34.366Z",
+    "resetToken": "1772027333489-vyrtz8rdvw",
+    "resetExpiry": 1772030933489
+  },
+  {
+    "id": 1772024744982,
+    "name": "Vivek Chhawari",
+    "email": "vivekgurjaryt37@gmail.com",
+    "phone": "08168540471",
+    "password": "Vml2ZWtAODE2OA==",
+    "createdAt": "2026-02-25T13:05:44.982Z",
+    "updatedAt": "2026-02-25T13:05:44.982Z",
+    "isActive": true,
+    "role": "user",
+    "address": {},
+    "resetToken": "1772027345137-zcy9qbya2w",
+    "resetExpiry": 1772030945137
+  }
+]
