@@ -11,6 +11,8 @@ passport.deserializeUser((user, done) => {
 });
 
 const express = require("express");
+const app = express();
+
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 require('dotenv').config();
@@ -46,7 +48,6 @@ const session = require("express-session");
 const crypto = require("crypto");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
-const app = express();
 app.use(helmet());
 // Basic middleware - no security restrictions
 
