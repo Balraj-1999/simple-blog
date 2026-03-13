@@ -1,4 +1,7 @@
 const helmet = require("helmet");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const FacebookStrategy = require("passport-facebook").Strategy;
 
 const express = require("express");
 const bcrypt = require("bcrypt");
