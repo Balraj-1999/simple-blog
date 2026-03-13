@@ -14,6 +14,22 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 require('dotenv').config();
+
+
+passport.use(new GoogleStrategy({
+
+clientID: "GOOGLE_CLIENT_ID",
+clientSecret: "GOOGLE_CLIENT_SECRET",
+callbackURL: "/auth/google/callback"
+
+},
+
+(accessToken, refreshToken, profile, done) => {
+
+return done(null, profile);
+
+}));
+
 const multer = require("multer"); 
 const session = require("express-session");
 const crypto = require("crypto");
@@ -13501,6 +13517,22 @@ app.post("/reset-password", (req, res) => {
   console.log("Password reset successful for user:", users[userIndex].email);
   
   res.redirect("/login-user?success=Password reset successful! Please login with your new password");
+});
+app.get("/auth/google",
+passport.authenticate("google", { scope: ["profile","email"] })
+);
+
+app.get("/auth/google/callback",
+
+passport.authenticate("google", { failureRedirect: "/login-user" }),
+
+(req,res)=>{
+
+req.session.loggedIn = true;
+req.session.userName = req.user.displayName;
+
+res.redirect("/profile");
+
 });
 
 // REGISTER PAGE
