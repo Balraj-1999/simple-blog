@@ -1,13 +1,23 @@
+const helmet = require("helmet");
+
 const express = require("express");
+const bcrypt = require("bcrypt");
 const fs = require("fs");
 require('dotenv').config();
 const multer = require("multer"); 
 const session = require("express-session");
 const crypto = require("crypto");
 const path = require("path");
+const rateLimit = require("express-rate-limit");
 const app = express();
-
+app.use(helmet());
 // Basic middleware - no security restrictions
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: "Too many login attempts. Try again later."
+});
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -126,14 +136,15 @@ function loadWishlist() {
 }
 
 // Simple password functions (no bcrypt)
-function hashPassword(password) {
-  return Buffer.from(password).toString('base64');
+
+async function hashPassword(password) {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
 }
 
-function comparePassword(password, hash) {
-  return hash === Buffer.from(password).toString('base64');
+async function comparePassword(password, hash) {
+  return await bcrypt.compare(password, hash);
 }
-
 // Initialize categories file if it doesn't exist
 if (!fs.existsSync(CATEGORIES_FILE)) {
   const defaultCategories = [
@@ -2238,11 +2249,11 @@ app.get("/login", (req, res) => {
 });
 
 // ADMIN LOGIN POST
-app.post("/login", (req, res) => {
+app.post("/login", loginLimiter, (req, res) => {
   const { username, password } = req.body;
   
   const ADMIN_USERNAME = "admin";
-  const ADMIN_PASSWORD = "admin123";
+  const ADMIN_PASSWORD = "Vivek@2026Secure";
   
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
     req.session.loggedIn = true;
@@ -18344,9 +18355,10 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`✅ All security features have been removed for development`);
   console.log(`📝 Admin login: admin / admin123`);
   console.log(`🔗 http://localhost:${PORT}`);
+
 });
