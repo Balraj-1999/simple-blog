@@ -15,14 +15,11 @@ const bcrypt = require("bcrypt");
 const fs = require("fs");
 require('dotenv').config();
 
-
 passport.use(new GoogleStrategy({
-
-clientID: "871561135217-pln5ohluguc6fbdbud24gorcor92akl9.apps.googleusercontent.com",
-clientSecret: "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",
+clientID: "871561135217-xxxxxxxxxxxxxxxx.apps.googleusercontent.com",
+clientSecret: "GOCSPX-xxxxxxxxxxxxx",
 callbackURL: "https://sportsindacompany.com/auth/google/callback"
 },
-
 (accessToken, refreshToken, profile, done) => {
 
 return done(null, profile);
