@@ -33,6 +33,8 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 
   }
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Simple static file serving
 app.use("/uploads", express.static("uploads"));
