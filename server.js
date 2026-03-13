@@ -25,6 +25,21 @@ callbackURL: "https://sportsindacompany.com/auth/google/callback"
 return done(null, profile);
 
 }));
+app.get('/auth/google',
+passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+passport.authenticate('google', { failureRedirect: '/login-user' }),
+(req, res) => {
+
+req.session.loggedIn = true;
+req.session.userName = req.user.displayName;
+
+res.redirect('/profile');
+
+});
+
 
 const multer = require("multer"); 
 const session = require("express-session");
@@ -13520,22 +13535,7 @@ app.post("/reset-password", (req, res) => {
   
   res.redirect("/login-user?success=Password reset successful! Please login with your new password");
 });
-app.get("/auth/google",
-passport.authenticate("google", { scope: ["profile","email"] })
-);
 
-app.get("/auth/google/callback",
-
-passport.authenticate("google", { failureRedirect: "/login-user" }),
-
-(req,res)=>{
-
-req.session.loggedIn = true;
-req.session.userName = req.user.displayName;
-
-res.redirect("/profile");
-
-});
 
 // REGISTER PAGE
 app.get("/register", (req, res) => {
