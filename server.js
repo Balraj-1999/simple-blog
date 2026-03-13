@@ -12917,16 +12917,22 @@ app.get("/login-user", (req, res) => {
         <span>Or continue with</span>
       </div>
       
-      <div class="social-login">
-        <button type="button" class="social-btn google" onclick="alert('Google login coming soon!')">
-          <i class="fab fa-google"></i>
-          Google
-        </button>
-        <button type="button" class="social-btn facebook" onclick="alert('Facebook login coming soon!')">
-          <i class="fab fa-facebook"></i>
-          Facebook
-        </button>
-      </div>
+     <div class="social-login">
+
+<a href="/auth/google">
+<button type="button" class="social-btn google">
+<i class="fab fa-google"></i>
+Google
+</button>
+</a>
+
+<button type="button" class="social-btn facebook">
+<i class="fab fa-facebook"></i>
+Facebook
+</button>
+
+</div>
+
       
       <div class="auth-footer">
         <p>Don't have an account? <a href="/register">Sign up now</a></p>
