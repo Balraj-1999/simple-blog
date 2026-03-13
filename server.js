@@ -2,6 +2,13 @@ const helmet = require("helmet");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
 
 const express = require("express");
 const bcrypt = require("bcrypt");
@@ -15,6 +22,7 @@ const rateLimit = require("express-rate-limit");
 const app = express();
 app.use(helmet());
 // Basic middleware - no security restrictions
+
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
