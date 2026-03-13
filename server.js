@@ -12932,7 +12932,7 @@ app.get("/login-user", (req, res) => {
 </html>`);
 });
 // LOGIN USER POST - IMPROVED VERSION
-app.post("/login-user", (req, res) => {
+app.post("/login-user", async (req, res) => {
   const { email, password } = req.body;
   
   console.log("Login attempt for email:", email);
@@ -12957,7 +12957,8 @@ app.post("/login-user", (req, res) => {
   console.log("User found:", user.name);
   
   // Check password
-  if (!comparePassword(password, user.password)) {
+  if (!(await comparePassword(password, user.password))) {
+
     console.log("Invalid password for user:", email);
     return res.redirect("/login-user?error=Invalid email or password");
   }
