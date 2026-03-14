@@ -69,7 +69,7 @@ app.get('/auth/google/callback',
       }
 
       req.session.loggedIn = true;
-
+      req.session.userId = req.user.id || req.user.emails?.[0]?.value;
       req.session.userName =
         req.user.displayName ||
         (req.user.name && req.user.name.givenName) ||
