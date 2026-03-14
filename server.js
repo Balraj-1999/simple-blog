@@ -71,7 +71,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Simple session configuration
 app.use(session({
-  secret: 'your-secret-key-here',
+  secret: process.env.SESSION_SECRET
   resave: false,
   saveUninitialized: true,
   cookie: { 
@@ -13597,6 +13597,8 @@ app.post("/reset-password", (req, res) => {
 
 // REGISTER PAGE
 app.get("/register", (req, res) => {
+  const csrfToken = req.csrfToken();   // ADD THIS
+
   if (req.session.userId) {
     return res.redirect("/profile");
   }
@@ -13800,64 +13802,81 @@ app.get("/register", (req, res) => {
       </div>
       
       <form method="POST" action="/register" id="registerForm">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <script src="https://www.google.com/recaptcha/api.js"></script>
 
-<div class="g-recaptcha" data-sitekey="6Lfae4osAAAAADLo5H-aOUJZoVvjLp6p4A5FAu1R"></div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">First Name *</label>
-            <input type="text" name="firstName" class="form-input" placeholder="Enter first name" required>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Last Name *</label>
-            <input type="text" name="lastName" class="form-input" placeholder="Enter last name" required>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Email Address *</label>
-          <input type="email" name="email" class="form-input" placeholder="Enter your email" required>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Phone Number</label>
-          <input type="tel" name="phone" class="form-input" placeholder="Enter phone number (optional)">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Password *</label>
-          <input type="password" name="password" id="password" class="form-input" placeholder="Create a password" required oninput="checkPasswordStrength()">
-          <div class="password-strength">
-            <div class="strength-bar" id="strengthBar"></div>
-          </div>
-          <small style="color: #666; display: block; margin-top: 5px;">
-            Must be at least 8 characters with letters and numbers
-          </small>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Confirm Password *</label>
-          <input type="password" name="confirmPassword" class="form-input" placeholder="Confirm password" required>
-        </div>
-        
-        <div class="terms-check">
-          <input type="checkbox" id="terms" name="terms" required>
-          <label for="terms">
-            I agree to the <a href="/terms" target="_blank">Terms & Conditions</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a>
-          </label>
-        </div>
-        
-        <div class="terms-check">
-          <input type="checkbox" id="newsletter" name="newsletter" checked>
-          <label for="newsletter">
-            Subscribe to newsletter for exclusive offers and updates
-          </label>
-        </div>
-        
-        <button type="submit" class="auth-btn">Create Account</button>
-      </form>
+<!-- CSRF TOKEN -->
+<input type="hidden" name="_csrf" value="${csrfToken}">
+<!-- RECAPTCHA SCRIPT -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<div class="form-row">
+  <div class="form-group">
+    <label class="form-label">First Name *</label>
+    <input type="text" name="firstName" class="form-input" placeholder="Enter first name" required>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Last Name *</label>
+    <input type="text" name="lastName" class="form-input" placeholder="Enter last name" required>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Email Address *</label>
+  <input type="email" name="email" class="form-input" placeholder="Enter your email" required>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Phone Number</label>
+  <input type="tel" name="phone" class="form-input" placeholder="Enter phone number (optional)">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Password *</label>
+  <input type="password" name="password" id="password" class="form-input" placeholder="Create a password" required oninput="checkPasswordStrength()">
+
+  <div class="password-strength">
+    <div class="strength-bar" id="strengthBar"></div>
+  </div>
+
+  <small style="color:#666;display:block;margin-top:5px;">
+    Must be at least 8 characters with letters and numbers
+  </small>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Confirm Password *</label>
+  <input type="password" name="confirmPassword" class="form-input" placeholder="Confirm password" required>
+</div>
+
+<div class="terms-check">
+  <input type="checkbox" id="terms" name="terms" required>
+  <label for="terms">
+    I agree to the 
+    <a href="/terms" target="_blank">Terms & Conditions</a> 
+    and 
+    <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+  </label>
+</div>
+
+<div class="terms-check">
+  <input type="checkbox" id="newsletter" name="newsletter" checked>
+  <label for="newsletter">
+    Subscribe to newsletter for exclusive offers and updates
+  </label>
+</div>
+
+<!-- RECAPTCHA -->
+<div style="margin-top:15px">
+  <div class="g-recaptcha" data-sitekey="6Lfae4osAAAAADLo5H-aOUJZoVvjLp6p4A5FAu1R"></div>
+</div>
+
+<br>
+
+<button type="submit" class="auth-btn">
+Create Account
+</button>
+
+</form>
       
       <div class="auth-footer">
         <p>Already have an account? <a href="/login-user">Login here</a></p>
