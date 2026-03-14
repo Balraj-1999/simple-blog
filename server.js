@@ -13948,157 +13948,65 @@ Create Account
 
 // REGISTER POST - IMPROVED VERSION
 app.post("/register", async (req, res) => {
-  
-  const axios = require("axios");
-
-const captcha = req.body["g-recaptcha-response"];
-
-const verify = await axios.post(
-`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET}&response=${captcha}`
-);
-
-if(!verify.data.success){
-  return res.redirect("/register?error=Captcha failed");
-}
-  const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
-
-  console.log("Registration attempt for email:", email);
-  
-  const otp = Math.floor(100000 + Math.random() * 900000);
-
-req.session.pendingUser = {
-  firstName,
-  lastName,
-  email,
-  phone,
-  password
-};
-
-req.session.otp = otp;
-
-await transporter.sendMail({
-  to: email,
-  subject: "Sports India Email Verification",
-  text: `Your OTP is ${otp}`
-});
-  return res.redirect("/verify-otp");
-  // Basic required validation
-  if (!firstName || !lastName || !email || !password) {
-    return res.redirect("/register?error=All required fields must be filled");
-  }
-
-  // Email format validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.redirect("/register?error=Invalid email address");
-  }
-
-  // Phone validation (optional but if present must be 10 digits)
-  const phoneRegex = /^[0-9]{10}$/;
-  if (phone && !phoneRegex.test(phone)) {
-    return res.redirect("/register?error=Phone number must be 10 digits");
-  }
-
-  // Password validation
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
-
-  if (!passwordRegex.test(password)) {
-    return res.redirect("/register?error=Password must contain letters and numbers and be at least 8 characters");
-  }
-
-  // Confirm password
-  if (password !== confirmPassword) {
-    return res.redirect("/register?error=Passwords do not match");
-  }
-
-  // Terms check
-  if (!terms) {
-    return res.redirect("/register?error=You must accept the terms and conditions");
-  }
-
-  const users = loadUsers();
-
-  // Email duplicate protection
-  if (users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
-    return res.redirect("/register?error=Email already registered");
-  }
-
   try {
+    // 🔹 FORM DATA EXTRACT KARO
+    const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
 
-    // Password hashing (IMPORTANT SECURITY)
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = {
-      id: Date.now().toString(),
-      name: `${firstName} ${lastName}`.trim(),
-      email: email.toLowerCase(),
-      phone: phone || '',
-      password: hashedPassword,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      isActive: true,
-      role: 'user',
-      provider: "local",
-      address: {}
-    };
-
-    users.push(newUser);
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-
-    console.log("New user created:", newUser.id);
-
-    // Newsletter subscription
-    if (newsletter === 'on') {
-      try {
-
-        const subscribers = JSON.parse(fs.readFileSync(NEWSLETTER_FILE, "utf8"));
-
-        // prevent duplicate newsletter emails
-        if (!subscribers.some(s => s.email === email.toLowerCase())) {
-
-          subscribers.push({
-            email: email.toLowerCase(),
-            name: `${firstName} ${lastName}`.trim(),
-            date: new Date().toISOString(),
-            active: true
-          });
-
-          fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify(subscribers, null, 2));
-
-        }
-
-      } catch (e) {
-        console.error("Newsletter error:", e);
-      }
+    // 🔹 BASIC VALIDATION
+    if (!firstName || !lastName || !email || !password) {
+      return res.redirect("/register?error=All required fields must be filled");
+    }
+    if (password !== confirmPassword) {
+      return res.redirect("/register?error=Passwords do not match");
+    }
+    if (password.length < 8) {
+      return res.redirect("/register?error=Password must be at least 8 characters");
+    }
+    if (!terms) {
+      return res.redirect("/register?error=You must accept terms and conditions");
     }
 
-    // Session creation
-    req.session.userId = newUser.id;
-    req.session.userName = newUser.name;
-    req.session.userEmail = newUser.email;
-    req.session.loggedIn = true;
+    // 🔹 RECAPTCHA VERIFICATION
+    const axios = require("axios");
+    const captcha = req.body["g-recaptcha-response"];
+    const verify = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET}&response=${captcha}`
+    );
+    if (!verify.data.success) {
+      return res.redirect("/register?error=Captcha failed");
+    }
 
-    req.session.save((err) => {
+    // 🔹 CHECK IF EMAIL ALREADY EXISTS
+    const users = loadUsers();
+    if (users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+      return res.redirect("/register?error=Email already registered");
+    }
 
-      if (err) {
-        console.error("Session error:", err);
-        return res.redirect("/login-user?error=Registration successful but login failed");
-      }
+    // 🔹 GENERATE OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
-      console.log("Registration successful");
+    // 🔹 SAVE PENDING USER IN SESSION
+    req.session.pendingUser = {
+      firstName,
+      lastName,
+      email,
+      phone,
+      password   // plain password, will hash after OTP verification
+    };
+    req.session.otp = otp;
 
-      res.redirect("/profile?welcome=true");
-
+    // 🔹 SEND OTP EMAIL (with error handling)
+    await transporter.sendMail({
+      to: email,
+      subject: "Sports India Email Verification",
+      text: `Your OTP for registration is ${otp}. It is valid for 10 minutes.`
     });
 
-  } catch (err) {
-
-    console.error("Registration error:", err);
-
-    res.redirect("/register?error=Registration failed");
-
+    res.redirect("/verify-otp");
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.redirect("/register?error=Something went wrong. Please try again.");
   }
-
 });
 app.get("/verify-otp",(req,res)=>{
 
