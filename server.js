@@ -71,7 +71,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Simple session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: { 
