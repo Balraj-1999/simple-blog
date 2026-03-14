@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const helmet = require("helmet");
 const csrf = require("csurf");
 const passport = require("passport");
@@ -16,7 +18,6 @@ const app = express();
 
 const bcrypt = require("bcrypt");
 const fs = require("fs");
-require('dotenv').config();
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
