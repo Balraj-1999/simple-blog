@@ -13091,7 +13091,7 @@ req.session.loggedIn = true;
 
 res.redirect("/profile");
   
-  });
+
 });
 // ============================================
 // FORGOT PASSWORD PAGE
