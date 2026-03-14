@@ -1,5 +1,6 @@
 const helmet = require("helmet");
 const passport = require("passport");
+const nodemailer = require("nodemailer");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -15,6 +16,13 @@ const app = express();
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 require('dotenv').config();
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 const POSTS_FILE = "posts.json";
 const SLIDER_FILE = "sliders.json";
 const ORDERS_FILE = "orders.json";
@@ -13903,11 +13911,30 @@ app.get("/register", (req, res) => {
 
 // REGISTER POST - IMPROVED VERSION
 app.post("/register", async (req, res) => {
-
+  
+  
   const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
 
   console.log("Registration attempt for email:", email);
+  
+  const otp = Math.floor(100000 + Math.random() * 900000);
 
+req.session.pendingUser = {
+  firstName,
+  lastName,
+  email,
+  phone,
+  password
+};
+
+req.session.otp = otp;
+
+await transporter.sendMail({
+  to: email,
+  subject: "Sports India Email Verification",
+  text: `Your OTP is ${otp}`
+});
+  return res.redirect("/verify-otp");
   // Basic required validation
   if (!firstName || !lastName || !email || !password) {
     return res.redirect("/register?error=All required fields must be filled");
@@ -14026,6 +14053,56 @@ app.post("/register", async (req, res) => {
   }
 
 });
+app.get("/verify-otp",(req,res)=>{
+
+  res.send(`
+  <h2>Email Verification</h2>
+
+  <form method="POST" action="/verify-otp">
+
+  <input type="text" name="otp" placeholder="Enter OTP" required>
+
+  <button type="submit">Verify OTP</button>
+
+  </form>
+
+  `);
+
+});
+app.post("/verify-otp", async (req,res)=>{
+
+  const { otp } = req.body;
+
+  if(otp != req.session.otp){
+    return res.redirect("/verify-otp?error=Invalid OTP");
+  }
+
+  const users = loadUsers();
+
+  const user = req.session.pendingUser;
+
+  const hashedPassword = await bcrypt.hash(user.password,10);
+
+  const newUser = {
+    id: Date.now().toString(),
+    name: `${user.firstName} ${user.lastName}`,
+    email: user.email,
+    phone: user.phone,
+    password: hashedPassword,
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newUser);
+
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users,null,2));
+
+  req.session.userId = newUser.id;
+  req.session.loggedIn = true;
+
+  res.redirect("/profile");
+
+});
+
 // ADD TO CART FUNCTIONALITY
 app.post("/add-to-cart/:slug", (req, res) => {
   const products = loadPosts();
