@@ -24,26 +24,6 @@ passport.use(new GoogleStrategy({
 (accessToken, refreshToken, profile, done) => {
   return done(null, profile);
 }));
-app.get('/auth/google',
-passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-app.get('/auth/google/callback',
-passport.authenticate('google', { failureRedirect: '/login-user' }),
-(req, res) => {
-
-req.session.loggedIn = true;
-
-req.session.userName =
-req.user.displayName ||
-req.user.name?.givenName ||
-"Google User";
-
-req.session.userEmail =
-req.user.emails?.[0]?.value || "";
-
-res.redirect('/profile');
-
-});
 
 
 
@@ -75,6 +55,27 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.get('/auth/google',
+passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+passport.authenticate('google', { failureRedirect: '/login-user' }),
+(req, res) => {
+
+req.session.loggedIn = true;
+
+req.session.userName =
+req.user.displayName ||
+req.user.name?.givenName ||
+"Google User";
+
+req.session.userEmail =
+req.user.emails?.[0]?.value || "";
+
+res.redirect('/profile');
+
+});
 
 // Simple static file serving
 app.use("/uploads", express.static("uploads"));
