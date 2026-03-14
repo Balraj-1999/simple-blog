@@ -60,37 +60,34 @@ passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
 app.get('/auth/google/callback',
-passport.authenticate('google', { failureRedirect: '/login-user' }),
-(req, res) => {
+  passport.authenticate('google', { failureRedirect: '/login-user' }),
+  (req, res) => {
+    try {
 
-try {
+      if (!req.user) {
+        return res.redirect('/login-user');
+      }
 
-if (!req.user) {
-  return res.redirect('/login-user');
-}
+      req.session.loggedIn = true;
 
-req.session.loggedIn = true;
+      req.session.userName =
+        req.user.displayName ||
+        (req.user.name && req.user.name.givenName) ||
+        "Google User";
 
-req.session.userName =
-req.user.displayName ||
-req.user.name?.givenName ||
-"Google User";
+      req.session.userEmail =
+        req.user.emails && req.user.emails[0]
+          ? req.user.emails[0].value
+          : "";
 
-req.session.userEmail =
-req.user.emails && req.user.emails[0]
-  ? req.user.emails[0].value
-  : "";
+      return res.redirect('/profile');
 
-res.redirect('/profile');
-
-} catch (err) {
-
-console.error("Google login error:", err);
-res.redirect('/login-user');
-
-}
-
-});
+    } catch (err) {
+      console.error("Google callback error:", err);
+      return res.redirect('/login-user');
+    }
+  }
+);
 
 // Simple static file serving
 app.use("/uploads", express.static("uploads"));
