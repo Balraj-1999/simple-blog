@@ -17,8 +17,8 @@ const fs = require("fs");
 require('dotenv').config();
 
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  clientID: "871561135217-pln5ohluguc6fbdbud24gorcor92akl9.apps.googleusercontent.com",
+  clientSecret: "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",
   callbackURL: "https://sportsindacompany.com/auth/google/callback"
 },
 (accessToken, refreshToken, profile, done) => {
