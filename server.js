@@ -67,18 +67,34 @@ app.get('/auth/google/callback',
       if (!req.user) {
         return res.redirect('/login-user');
       }
-
       req.session.loggedIn = true;
-      req.session.userId = req.user.id || req.user.emails?.[0]?.value;
-      req.session.userName =
-        req.user.displayName ||
-        (req.user.name && req.user.name.givenName) ||
-        "Google User";
 
-      req.session.userEmail =
-        req.user.emails && req.user.emails[0]
-          ? req.user.emails[0].value
-          : "";
+const email = req.user.emails?.[0]?.value || "";
+
+let users = loadUsers();
+let existingUser = users.find(u => u.email === email);
+
+if (!existingUser) {
+
+  const newUser = {
+    id: Date.now().toString(),
+    name: req.user.displayName || "Google User",
+    email: email,
+    phone: "",
+    createdAt: new Date().toISOString(),
+    provider: "google"
+  };
+
+  users.push(newUser);
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+
+  existingUser = newUser;
+}
+
+req.session.userId = existingUser.id;
+req.session.userName = existingUser.name;
+req.session.userEmail = existingUser.email;
+      
 
       return res.redirect('/profile');
 
