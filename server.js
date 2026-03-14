@@ -1,4 +1,5 @@
 const helmet = require("helmet");
+const csrf = require("csurf");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -80,7 +81,9 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+const csrfProtection = csrf();
 
+app.use(csrfProtection);
 app.get('/auth/google',
 passport.authenticate('google', { scope: ['profile', 'email'] })
 );
@@ -13029,7 +13032,7 @@ Facebook
 </html>`);
 });
 // LOGIN USER POST - IMPROVED VERSION
-app.post("/login-user", async (req, res) => {
+app.post("/login-user", loginLimiter, async (req,res)=>{
   const { email, password } = req.body;
   
   console.log("Login attempt for email:", email);
@@ -13052,31 +13055,35 @@ app.post("/login-user", async (req, res) => {
   }
   
   console.log("User found:", user.name);
-  
+  if(user.lockUntil && user.lockUntil > Date.now()){
+  return res.send("Account locked. Try again later");
+}
   // Check password
   if (!(await comparePassword(password, user.password))) {
 
-    console.log("Invalid password for user:", email);
-    return res.redirect("/login-user?error=Invalid email or password");
+  console.log("Invalid password for user:", email);
+
+  user.loginAttempts = (user.loginAttempts || 0) + 1;
+
+  if (user.loginAttempts >= 5) {
+    user.lockUntil = Date.now() + 15 * 60 * 1000; // 15 minutes lock
   }
+
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+
+  return res.redirect("/login-user?error=Invalid email or password");
+}
+  // successful login
+user.loginAttempts = 0;
+user.lockUntil = null;
+
+fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+
+req.session.userId = user.id;
+req.session.loggedIn = true;
+
+res.redirect("/profile");
   
-  console.log("Password correct, logging in user:", user.id);
-  
-  // Set session data
-  req.session.userId = user.id;
-  req.session.userName = user.name;
-  req.session.userEmail = user.email;
-  req.session.loggedIn = true;
-  
-  // Save session explicitly
-  req.session.save((err) => {
-    if (err) {
-      console.error("Session save error:", err);
-      return res.redirect("/login-user?error=Login failed, please try again");
-    }
-    
-    console.log("Session saved, redirecting to profile");
-    res.redirect("/profile");
   });
 });
 // ============================================
@@ -13793,6 +13800,10 @@ app.get("/register", (req, res) => {
       </div>
       
       <form method="POST" action="/register" id="registerForm">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <script src="https://www.google.com/recaptcha/api.js"></script>
+
+<div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">First Name *</label>
@@ -13912,7 +13923,17 @@ app.get("/register", (req, res) => {
 // REGISTER POST - IMPROVED VERSION
 app.post("/register", async (req, res) => {
   
-  
+  const axios = require("axios");
+
+const captcha = req.body["g-recaptcha-response"];
+
+const verify = await axios.post(
+`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET}&response=${captcha}`
+);
+
+if(!verify.data.success){
+  return res.redirect("/register?error=Captcha failed");
+}
   const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
 
   console.log("Registration attempt for email:", email);
@@ -14089,6 +14110,8 @@ app.post("/verify-otp", async (req,res)=>{
     email: user.email,
     phone: user.phone,
     password: hashedPassword,
+    loginAttempts: 0,
+lockUntil: null,
     createdAt: new Date().toISOString()
   };
 
