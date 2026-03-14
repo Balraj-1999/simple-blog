@@ -63,6 +63,12 @@ app.get('/auth/google/callback',
 passport.authenticate('google', { failureRedirect: '/login-user' }),
 (req, res) => {
 
+try {
+
+if (!req.user) {
+  return res.redirect('/login-user');
+}
+
 req.session.loggedIn = true;
 
 req.session.userName =
@@ -71,9 +77,18 @@ req.user.name?.givenName ||
 "Google User";
 
 req.session.userEmail =
-req.user.emails?.[0]?.value || "";
+req.user.emails && req.user.emails[0]
+  ? req.user.emails[0].value
+  : "";
 
 res.redirect('/profile');
+
+} catch (err) {
+
+console.error("Google login error:", err);
+res.redirect('/login-user');
+
+}
 
 });
 
