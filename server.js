@@ -37,12 +37,12 @@ const POSTS_FILE = DATA_DIR + "/posts.json";
 const SLIDER_FILE = DATA_DIR + "/sliders.json";
 const ORDERS_FILE = DATA_DIR + "/orders.json";
 const USERS_FILE = DATA_DIR + "/users.json";
-const REVIEWS_FILE = "reviews.json";
-const WISHLIST_FILE = "wishlist.json";
-const NEWSLETTER_FILE = "newsletter.json";
-const CONTACT_FILE = "contacts.json";
-const CATEGORIES_FILE = "categories.json";
 
+const REVIEWS_FILE = DATA_DIR + "/reviews.json";
+const WISHLIST_FILE = DATA_DIR + "/wishlist.json";
+const NEWSLETTER_FILE = DATA_DIR + "/newsletter.json";
+const CONTACT_FILE = DATA_DIR + "/contacts.json";
+const CATEGORIES_FILE = DATA_DIR + "/categories.json";
 function loadUsers() {
   try {
     return JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
