@@ -24,6 +24,14 @@ const WISHLIST_FILE = "wishlist.json";
 const NEWSLETTER_FILE = "newsletter.json";
 const CONTACT_FILE = "contacts.json";
 const CATEGORIES_FILE = "categories.json";
+
+function loadUsers() {
+  try {
+    return JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+  } catch (e) {
+    return [];
+  }
+}
 passport.use(new GoogleStrategy({
   clientID: "871561135217-pln5ohluguc6fbdbud24gorcor92akl9.apps.googleusercontent.com",
   clientSecret: "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",
@@ -64,10 +72,10 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.get('/auth/google',
 passport.authenticate('google', { scope: ['profile', 'email'] })
 );
-
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login-user' }),
   (req, res) => {
@@ -79,8 +87,8 @@ app.get('/auth/google/callback',
       req.session.loggedIn = true;
 
 const email = req.user.emails?.[0]?.value || "";
-
 let users = loadUsers();
+
 let existingUser = users.find(u => u.email === email);
 
 if (!existingUser) {
