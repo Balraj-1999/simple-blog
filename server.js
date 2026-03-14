@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const helmet = require("helmet");
-const csrf = require("csurf");
+
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -15,6 +15,8 @@ passport.deserializeUser((user, done) => {
 
 const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 const bcrypt = require("bcrypt");
 const fs = require("fs");
@@ -82,7 +84,6 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-const csrfProtection = csrf();
 
 app.get('/auth/google',
 passport.authenticate('google', { scope: ['profile', 'email'] })
