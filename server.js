@@ -27,10 +27,16 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS
   }
 });
-const POSTS_FILE = "posts.json";
-const SLIDER_FILE = "sliders.json";
-const ORDERS_FILE = "orders.json";
-const USERS_FILE = "users.json";
+const DATA_DIR = "./data";
+
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR);
+}
+
+const POSTS_FILE = DATA_DIR + "/posts.json";
+const SLIDER_FILE = DATA_DIR + "/sliders.json";
+const ORDERS_FILE = DATA_DIR + "/orders.json";
+const USERS_FILE = DATA_DIR + "/users.json";
 const REVIEWS_FILE = "reviews.json";
 const WISHLIST_FILE = "wishlist.json";
 const NEWSLETTER_FILE = "newsletter.json";
