@@ -67,6 +67,7 @@ const crypto = require("crypto");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
 app.use(helmet());
+app.set('trust proxy', 1);  // 👈 Add this line
 // Basic middleware - no security restrictions
 
 
@@ -13604,7 +13605,6 @@ app.post("/reset-password", (req, res) => {
 
 // REGISTER PAGE
 app.get("/register", (req, res) => {
-  const csrfToken = req.csrfToken();   // ADD THIS
 
   if (req.session.userId) {
     return res.redirect("/profile");
@@ -13811,7 +13811,6 @@ app.get("/register", (req, res) => {
       <form method="POST" action="/register" id="registerForm">
 
 <!-- CSRF TOKEN -->
-<input type="hidden" name="_csrf" value="${csrfToken}">
 <!-- RECAPTCHA SCRIPT -->
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
