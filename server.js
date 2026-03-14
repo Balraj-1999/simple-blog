@@ -83,7 +83,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 const csrfProtection = csrf();
 
-app.use(csrfProtection);
 app.get('/auth/google',
 passport.authenticate('google', { scope: ['profile', 'email'] })
 );
