@@ -13902,93 +13902,130 @@ app.get("/register", (req, res) => {
 
 
 // REGISTER POST - IMPROVED VERSION
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
+
   const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
-  
+
   console.log("Registration attempt for email:", email);
-  
-  // Validate input
+
+  // Basic required validation
   if (!firstName || !lastName || !email || !password) {
-    console.log("Missing required fields");
     return res.redirect("/register?error=All required fields must be filled");
   }
-  
+
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.redirect("/register?error=Invalid email address");
+  }
+
+  // Phone validation (optional but if present must be 10 digits)
+  const phoneRegex = /^[0-9]{10}$/;
+  if (phone && !phoneRegex.test(phone)) {
+    return res.redirect("/register?error=Phone number must be 10 digits");
+  }
+
+  // Password validation
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+  if (!passwordRegex.test(password)) {
+    return res.redirect("/register?error=Password must contain letters and numbers and be at least 8 characters");
+  }
+
+  // Confirm password
   if (password !== confirmPassword) {
-    console.log("Passwords do not match");
     return res.redirect("/register?error=Passwords do not match");
   }
-  
-  if (password.length < 8) {
-    console.log("Password too short");
-    return res.redirect("/register?error=Password must be at least 8 characters");
-  }
-  
+
+  // Terms check
   if (!terms) {
-    console.log("Terms not accepted");
     return res.redirect("/register?error=You must accept the terms and conditions");
   }
-  
+
   const users = loadUsers();
-  
-  // Check if email already exists (case insensitive)
+
+  // Email duplicate protection
   if (users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
-    console.log("Email already registered:", email);
     return res.redirect("/register?error=Email already registered");
   }
-  
-  // Create new user
-  const newUser = {
-    id: Date.now(),
-    name: `${firstName} ${lastName}`.trim(),
-    email: email.toLowerCase(),
-    phone: phone || '',
-    password: hashPassword(password),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    isActive: true,
-    role: 'user',
-    address: {}
-  };
-  
-  users.push(newUser);
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-  console.log("New user created:", newUser.id);
-  
-  // Add to newsletter if subscribed
-  if (newsletter === 'on') {
-    try {
-      const subscribers = JSON.parse(fs.readFileSync(NEWSLETTER_FILE, "utf8"));
-      subscribers.push({
-        email: email.toLowerCase(),
-        name: `${firstName} ${lastName}`.trim(),
-        date: new Date().toISOString(),
-        active: true
-      });
-      fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify(subscribers, null, 2));
-      console.log("Added to newsletter");
-    } catch (e) {
-      console.error("Error adding to newsletter:", e);
-    }
-  }
-  
-  // Set session
-  req.session.userId = newUser.id;
-  req.session.userName = newUser.name;
-  req.session.userEmail = newUser.email;
-  req.session.loggedIn = true;
-  
-  // Save session and redirect
-  req.session.save((err) => {
-    if (err) {
-      console.error("Session save error:", err);
-      return res.redirect("/login-user?error=Registration successful but login failed, please login manually");
-    }
-    
-    console.log("Registration successful, redirecting to profile");
-    res.redirect("/profile?welcome=true");
-  });
-});
 
+  try {
+
+    // Password hashing (IMPORTANT SECURITY)
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
+      id: Date.now().toString(),
+      name: `${firstName} ${lastName}`.trim(),
+      email: email.toLowerCase(),
+      phone: phone || '',
+      password: hashedPassword,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isActive: true,
+      role: 'user',
+      provider: "local",
+      address: {}
+    };
+
+    users.push(newUser);
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+
+    console.log("New user created:", newUser.id);
+
+    // Newsletter subscription
+    if (newsletter === 'on') {
+      try {
+
+        const subscribers = JSON.parse(fs.readFileSync(NEWSLETTER_FILE, "utf8"));
+
+        // prevent duplicate newsletter emails
+        if (!subscribers.some(s => s.email === email.toLowerCase())) {
+
+          subscribers.push({
+            email: email.toLowerCase(),
+            name: `${firstName} ${lastName}`.trim(),
+            date: new Date().toISOString(),
+            active: true
+          });
+
+          fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify(subscribers, null, 2));
+
+        }
+
+      } catch (e) {
+        console.error("Newsletter error:", e);
+      }
+    }
+
+    // Session creation
+    req.session.userId = newUser.id;
+    req.session.userName = newUser.name;
+    req.session.userEmail = newUser.email;
+    req.session.loggedIn = true;
+
+    req.session.save((err) => {
+
+      if (err) {
+        console.error("Session error:", err);
+        return res.redirect("/login-user?error=Registration successful but login failed");
+      }
+
+      console.log("Registration successful");
+
+      res.redirect("/profile?welcome=true");
+
+    });
+
+  } catch (err) {
+
+    console.error("Registration error:", err);
+
+    res.redirect("/register?error=Registration failed");
+
+  }
+
+});
 // ADD TO CART FUNCTIONALITY
 app.post("/add-to-cart/:slug", (req, res) => {
   const products = loadPosts();
