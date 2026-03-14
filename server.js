@@ -13803,7 +13803,7 @@ app.get("/register", (req, res) => {
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <script src="https://www.google.com/recaptcha/api.js"></script>
 
-<div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
+<div class="g-recaptcha" data-sitekey="6Lfae4osAAAAADLo5H-aOUJZoVvjLp6p4A5FAu1R"></div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">First Name *</label>
