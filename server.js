@@ -34,7 +34,7 @@ function loadUsers() {
 }
 passport.use(new GoogleStrategy({
   clientID: "871561135217-pln5ohluguc6fbdbud24gorcor92akl9.apps.googleusercontent.com",
-  clientSecret: "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",
+  clientSecret: "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",
   callbackURL: "https://sportsindacompany.com/auth/google/callback"
 },
 (accessToken, refreshToken, profile, done) => {
