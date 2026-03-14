@@ -15,7 +15,15 @@ const app = express();
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 require('dotenv').config();
-
+const POSTS_FILE = "posts.json";
+const SLIDER_FILE = "sliders.json";
+const ORDERS_FILE = "orders.json";
+const USERS_FILE = "users.json";
+const REVIEWS_FILE = "reviews.json";
+const WISHLIST_FILE = "wishlist.json";
+const NEWSLETTER_FILE = "newsletter.json";
+const CONTACT_FILE = "contacts.json";
+const CATEGORIES_FILE = "categories.json";
 passport.use(new GoogleStrategy({
   clientID: "871561135217-pln5ohluguc6fbdbud24gorcor92akl9.apps.googleusercontent.com",
   clientSecret: "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",
@@ -53,6 +61,7 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 
   }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.get('/auth/google',
@@ -128,15 +137,7 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-const POSTS_FILE = "posts.json";
-const SLIDER_FILE = "sliders.json";
-const ORDERS_FILE = "orders.json";
-const USERS_FILE = "users.json";
-const REVIEWS_FILE = "reviews.json";
-const WISHLIST_FILE = "wishlist.json";
-const NEWSLETTER_FILE = "newsletter.json";
-const CONTACT_FILE = "contacts.json";
-const CATEGORIES_FILE = "categories.json";
+
 
 // Initialize files if they don't exist
 const files = [
