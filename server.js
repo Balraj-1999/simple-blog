@@ -27,17 +27,24 @@ passport.use(new GoogleStrategy({
 app.get('/auth/google',
 passport.authenticate('google', { scope: ['profile', 'email'] })
 );
-
 app.get('/auth/google/callback',
 passport.authenticate('google', { failureRedirect: '/login-user' }),
 (req, res) => {
 
 req.session.loggedIn = true;
-req.session.userName = req.user.displayName;
+
+req.session.userName =
+req.user.displayName ||
+req.user.name?.givenName ||
+"Google User";
+
+req.session.userEmail =
+req.user.emails?.[0]?.value || "";
 
 res.redirect('/profile');
 
 });
+
 
 
 const multer = require("multer"); 
