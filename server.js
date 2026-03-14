@@ -17,14 +17,12 @@ const fs = require("fs");
 require('dotenv').config();
 
 passport.use(new GoogleStrategy({
-clientID: "871561135217-pln5oh1uguc6fbbdud24gorcor92akl9.apps.googleusercontent.com",
-clientSecret: "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",
-callbackURL: "https://sportsindacompany.com/auth/google/callback"
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: "https://sportsindacompany.com/auth/google/callback"
 },
 (accessToken, refreshToken, profile, done) => {
-
-return done(null, profile);
-
+  return done(null, profile);
 }));
 app.get('/auth/google',
 passport.authenticate('google', { scope: ['profile', 'email'] })
