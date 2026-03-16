@@ -11370,7 +11370,7 @@ const subtotal = cart.reduce((sum, item) => {
 }, 0);
 
 const shipping = subtotal > 999 ? 0 : 49;
-const tax = subtotal * 0.18;
+const tax = 0;
 const total = subtotal + shipping + tax;
 
 // Format for display
@@ -11378,12 +11378,7 @@ const formattedSubtotal = isNaN(subtotal) ? 0 : subtotal;
 const formattedTax = isNaN(tax) ? 0 : tax;
 const formattedTotal = isNaN(total) ? 0 : total;
 // Format order ID - show last 8 digits only for readability
-const formattedOrderId = order.id ? 
-  '#' + order.id.toString().slice(-8) : 
-  '#N/A';
 
-// Full ID for reference (shown in tooltip)
-const fullOrderId = order.id || 'N/A';
   
   let user = null;
   if (req.session.userId) {
