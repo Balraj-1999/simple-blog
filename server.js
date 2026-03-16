@@ -11296,17 +11296,14 @@ ${cart.map((item, index) => {
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <span>Shipping</span>
-            <span>₹ ${total > 999 ? '0' : '49'}</span>
-          </div>
-         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span>Tax (GST)</span>
-            <span>₹ ${(total * 0.18).toFixed(2)}</span>
-          </div>
+             <span>₹ 0</span>
+           </div>
+         
         </div>
         
         <div style="display: flex; justify-content: space-between; font-size: 24px; font-weight: bold; margin-bottom: 30px;">
           <span>Total</span>
-          <span style="color: #e53935;">₹ ${(total + (total > 999 ? 0 : 49) + (total * 0.18)).toFixed(2)}</span>
+          <span style="color: #e53935;">₹ ${total.toFixed(2)}</span>
         </div>
         
         <a href="/checkout" class="checkout-btn">Proceed to Checkout</a>
