@@ -11298,10 +11298,7 @@ ${cart.map((item, index) => {
             <span>Shipping</span>
             <span>₹ ${total > 999 ? '0' : '49'}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span>Tax (GST)</span>
-            <span>₹ ${(total * 0.18).toFixed(2)}</span>
-          </div>
+         
         </div>
         
         <div style="display: flex; justify-content: space-between; font-size: 24px; font-weight: bold; margin-bottom: 30px;">
