@@ -1,7 +1,11 @@
 require('dotenv').config();
-
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 const helmet = require("helmet");
-
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -63,7 +67,6 @@ passport.use(new GoogleStrategy({
 
 const multer = require("multer"); 
 const session = require("express-session");
-const crypto = require("crypto");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
 app.use(helmet());
