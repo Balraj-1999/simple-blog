@@ -147,6 +147,70 @@ req.session.userEmail = existingUser.email;
 // Simple static file serving
 app.use("/uploads", express.static("uploads"));
 
+/* ===============================
+   RAZORPAY PAYMENT ROUTES
+   =============================== */
+
+app.post("/create-razorpay-order", async (req, res) => {
+
+  const cart = req.session.cart || [];
+
+  if (cart.length === 0) {
+    return res.json({ success:false });
+  }
+
+  const total = cart.reduce((sum,item)=>{
+    return sum + (item.price * item.quantity);
+  },0);
+
+  const options = {
+    amount: total * 100,
+    currency: "INR",
+    receipt: "order_" + Date.now()
+  };
+
+  try{
+
+    const order = await razorpay.orders.create(options);
+
+    res.json({
+      success:true,
+      orderId:order.id,
+      amount:order.amount,
+      key:process.env.RAZORPAY_KEY_ID
+    });
+
+  }catch(err){
+    console.log(err);
+    res.status(500).send("Payment error");
+  }
+
+});
+
+
+app.post("/verify-payment",(req,res)=>{
+
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature
+  } = req.body;
+
+  const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+  const expectedSignature = crypto
+  .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+  .update(body.toString())
+  .digest("hex");
+
+  if(expectedSignature !== razorpay_signature){
+    return res.status(400).send("Payment verification failed");
+  }
+
+  res.json({success:true});
+
+});
+
 // Simple file upload configuration
 const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
@@ -11631,7 +11695,7 @@ const formattedTotal = isNaN(total) ? 0 : total;
       </div>
     </div>
     
-    <form method="POST" action="/place-order" id="checkoutForm">
+      <form id="checkoutForm">
       <div class="checkout-content">
         <div class="checkout-form">
           <div class="form-section">
@@ -11816,9 +11880,9 @@ const formattedTotal = isNaN(total) ? 0 : total;
             </div>
           </div>
           
-          <button type="submit" class="place-order-btn">
-            <i class="fas fa-lock"></i> Place Order
-          </button>
+         <button type="button" onclick="startPayment()" class="place-order-btn">
+Place Order
+</button>
           
           <p style="text-align: center; margin-top: 20px; color: #666; font-size: 14px;">
             By placing your order, you agree to our <a href="/terms" style="color: #e53935;">Terms & Conditions</a>
@@ -11885,6 +11949,72 @@ const formattedTotal = isNaN(total) ? 0 : total;
     });
     ` : ''}
   </script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+async function startPayment(){
+const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+if(paymentMethod === "upi"){
+  const upiId = document.querySelector('input[name="upiId"]').value;
+
+  if(!upiId){
+    alert("Please enter UPI ID");
+    return;
+  }
+}
+
+const res = await fetch("/create-razorpay-order",{
+method:"POST"
+});
+
+const data = await res.json();
+
+if(!data.success){
+alert("Cart empty");
+return;
+}
+
+const options = {
+
+key:data.key,
+amount:data.amount,
+currency:"INR",
+order_id:data.orderId,
+
+name:"Sports India",
+description:"Order Payment",
+
+handler:function(response){
+
+fetch("/verify-payment",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(response)
+})
+.then(res=>res.json())
+.then(data=>{
+window.location="/order-success";
+});
+
+},
+
+theme:{
+color:"#e53935"
+}
+
+};
+
+const rzp = new Razorpay(options);
+rzp.open();
+
+}
+
+</script>
+
 </body>
 </html>`);
 });
