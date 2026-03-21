@@ -188,8 +188,7 @@ app.post("/create-razorpay-order", async (req, res) => {
 });
 
 
-app.post("/verify-payment",(req,res)=>{
-
+app.post("/verify-payment", async (req, res) => {
   const {
     razorpay_order_id,
     razorpay_payment_id,
@@ -199,16 +198,69 @@ app.post("/verify-payment",(req,res)=>{
   const body = razorpay_order_id + "|" + razorpay_payment_id;
 
   const expectedSignature = crypto
-  .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-  .update(body.toString())
-  .digest("hex");
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(body.toString())
+    .digest("hex");
 
-  if(expectedSignature !== razorpay_signature){
-    return res.status(400).send("Payment verification failed");
+  if (expectedSignature !== razorpay_signature) {
+    return res.status(400).json({ success: false, error: "Payment verification failed" });
   }
 
-  res.json({success:true});
+  // Get cart data from session
+  const cart = req.session.cart || [];
+  
+  if (cart.length === 0) {
+    return res.json({ success: false, error: "Cart is empty" });
+  }
 
+  // Calculate totals
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shipping = subtotal > 999 ? 0 : 49;
+  const total = subtotal + shipping;
+
+  // Create order object
+  const order = {
+    id: "ORD" + Date.now(),
+    razorpayOrderId: razorpay_order_id,
+    razorpayPaymentId: razorpay_payment_id,
+    userId: req.session.userId || null,
+    customerName: req.session.checkoutName || "Guest",
+    email: req.session.checkoutEmail || "",
+    phone: req.session.checkoutPhone || "",
+    address: req.session.checkoutAddress || {},
+    items: cart,
+    subtotal: subtotal,
+    shipping: shipping,
+    total: total,
+    paymentMethod: "razorpay",
+    paymentStatus: "completed",
+    orderStatus: "pending",
+    date: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  };
+
+  // Save order to file
+  let orders = [];
+  try {
+    orders = JSON.parse(fs.readFileSync(ORDERS_FILE, "utf8"));
+  } catch (e) {
+    orders = [];
+  }
+  
+  orders.push(order);
+  fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2));
+
+  // Clear checkout session data
+  delete req.session.checkoutName;
+  delete req.session.checkoutEmail;
+  delete req.session.checkoutPhone;
+  delete req.session.checkoutAddress;
+  
+  // Clear cart AFTER saving order
+  req.session.cart = [];
+  req.session.save();
+
+  res.json({ success: true, orderId: order.id });
 });
 
 // Simple file upload configuration
@@ -11909,33 +11961,48 @@ Place Order
       document.getElementById('upiDetails').style.display = method === 'upi' ? 'block' : 'none';
     }
     
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-      
-      if (paymentMethod === 'card') {
-        const cardNumber = document.querySelector('input[name="cardNumber"]').value;
-        const cardName = document.querySelector('input[name="cardName"]').value;
-        const cardExpiry = document.querySelector('input[name="cardExpiry"]').value;
-        const cardCVV = document.querySelector('input[name="cardCVV"]').value;
-        
-        if (!cardNumber || !cardName || !cardExpiry || !cardCVV) {
-          e.preventDefault();
-          alert('Please fill all card details');
-          return false;
-        }
+    // In your checkout page, modify the form to handle both COD and online payments
+document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+  
+  if (paymentMethod === "cod") {
+    // Submit COD order
+    const formData = new FormData(this);
+    fetch('/place-order', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        window.location = '/order-success';
       }
-      
-      if (paymentMethod === 'upi') {
-        const upiId = document.querySelector('input[name="upiId"]').value;
-        if (!upiId) {
-          e.preventDefault();
-          alert('Please enter your UPI ID');
-          return false;
-        }
-      }
-      
-      return true;
     });
+  } else {
+    // For online payments, just save data and call startPayment
+    const formData = {
+      firstName: document.querySelector('input[name="firstName"]').value,
+      lastName: document.querySelector('input[name="lastName"]').value,
+      email: document.querySelector('input[name="email"]').value,
+      phone: document.querySelector('input[name="phone"]').value,
+      address: document.querySelector('input[name="address"]').value,
+      city: document.querySelector('input[name="city"]').value,
+      state: document.querySelector('input[name="state"]').value,
+      pincode: document.querySelector('input[name="pincode"]').value,
+      country: document.querySelector('input[name="country"]').value
+    };
+    
+    await fetch('/save-checkout-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+    
+    startPayment();
+  }
+});
     
     ${user && user.address ? `
     document.addEventListener('DOMContentLoaded', function() {
@@ -11950,69 +12017,77 @@ Place Order
     ` : ''}
   </script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
 <script>
-
-async function startPayment(){
-const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-
-if(paymentMethod === "upi"){
-  const upiId = document.querySelector('input[name="upiId"]').value;
-
-  if(!upiId){
-    alert("Please enter UPI ID");
+async function startPayment() {
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+  
+  // For COD, submit directly
+  if (paymentMethod === "cod") {
+    document.getElementById('checkoutForm').submit();
     return;
   }
+  
+  // Save checkout data to session first
+  const formData = {
+    firstName: document.querySelector('input[name="firstName"]').value,
+    lastName: document.querySelector('input[name="lastName"]').value,
+    email: document.querySelector('input[name="email"]').value,
+    phone: document.querySelector('input[name="phone"]').value,
+    address: document.querySelector('input[name="address"]').value,
+    city: document.querySelector('input[name="city"]').value,
+    state: document.querySelector('input[name="state"]').value,
+    pincode: document.querySelector('input[name="pincode"]').value,
+    country: document.querySelector('input[name="country"]').value
+  };
+  
+  // Save checkout data to session
+  await fetch('/save-checkout-data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  });
+  
+  const res = await fetch("/create-razorpay-order", {
+    method: "POST"
+  });
+  
+  const data = await res.json();
+  
+  if (!data.success) {
+    alert("Cart is empty");
+    return;
+  }
+  
+  const options = {
+    key: data.key,
+    amount: data.amount,
+    currency: "INR",
+    order_id: data.orderId,
+    name: "Sports India",
+    description: "Order Payment",
+    handler: function(response) {
+      fetch("/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(response)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          window.location = "/order-success";
+        } else {
+          alert("Payment verification failed. Please contact support.");
+        }
+      });
+    },
+    theme: {
+      color: "#e53935"
+    }
+  };
+  
+  const rzp = new Razorpay(options);
+  rzp.open();
 }
-
-const res = await fetch("/create-razorpay-order",{
-method:"POST"
-});
-
-const data = await res.json();
-
-if(!data.success){
-alert("Cart empty");
-return;
-}
-
-const options = {
-
-key:data.key,
-amount:data.amount,
-currency:"INR",
-order_id:data.orderId,
-
-name:"Sports India",
-description:"Order Payment",
-
-handler:function(response){
-
-fetch("/verify-payment",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify(response)
-})
-.then(res=>res.json())
-.then(data=>{
-window.location="/order-success";
-});
-
-},
-
-theme:{
-color:"#e53935"
-}
-
-};
-
-const rzp = new Razorpay(options);
-rzp.open();
-
-}
-
 </script>
 
 </body>
@@ -12460,7 +12535,72 @@ app.get("/order/:orderId", (req, res) => {
 </body>
 </html>`);
 });
-
+// SAVE CHECKOUT DATA TO SESSION
+app.post("/save-checkout-data", (req, res) => {
+  req.session.checkoutName = `${req.body.firstName} ${req.body.lastName}`;
+  req.session.checkoutEmail = req.body.email;
+  req.session.checkoutPhone = req.body.phone;
+  req.session.checkoutAddress = {
+    street: req.body.address,
+    city: req.body.city,
+    state: req.body.state,
+    pincode: req.body.pincode,
+    country: req.body.country
+  };
+  req.session.save();
+  res.json({ success: true });
+});
+// PLACE ORDER (COD)
+app.post("/place-order", (req, res) => {
+  const cart = req.session.cart || [];
+  
+  if (cart.length === 0) {
+    return res.json({ success: false, error: "Cart is empty" });
+  }
+  
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shipping = subtotal > 999 ? 0 : 49;
+  const total = subtotal + shipping;
+  
+  const order = {
+    id: "ORD" + Date.now(),
+    userId: req.session.userId || null,
+    customerName: `${req.body.firstName} ${req.body.lastName}`,
+    email: req.body.email,
+    phone: req.body.phone,
+    address: {
+      street: req.body.address,
+      city: req.body.city,
+      state: req.body.state,
+      pincode: req.body.pincode,
+      country: req.body.country
+    },
+    items: cart,
+    subtotal: subtotal,
+    shipping: shipping,
+    total: total,
+    paymentMethod: "cod",
+    paymentStatus: "pending",
+    orderStatus: "pending",
+    date: new Date().toISOString()
+  };
+  
+  let orders = [];
+  try {
+    orders = JSON.parse(fs.readFileSync(ORDERS_FILE, "utf8"));
+  } catch (e) {
+    orders = [];
+  }
+  
+  orders.push(order);
+  fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2));
+  
+  // Clear cart
+  req.session.cart = [];
+  req.session.save();
+  
+  res.json({ success: true, orderId: order.id });
+});
 // UPDATE ORDER STATUS (ADMIN)
 app.post("/admin/update-order-status", (req, res) => {
   if (!req.session.loggedIn) {
@@ -15038,6 +15178,75 @@ app.get("/orders", (req, res) => {
 </html>`);
 });
 
+// ORDER SUCCESS PAGE - ADD THIS AFTER YOUR PAYMENT ROUTES
+app.get("/order-success", (req, res) => {
+  // Clear cart after successful payment
+  req.session.cart = [];
+  req.session.save();
+  
+  res.send(`<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Success | Sports India</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    
+    .success-container {
+      max-width: 600px;
+      margin: 100px auto;
+      text-align: center;
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    }
+    
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: #4caf50;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px;
+      font-size: 50px;
+      color: white;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: #e53935;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  ${getHeader(req)}
+  
+  <div class="success-container">
+    <div class="success-icon">✓</div>
+    <h1 style="margin-bottom: 20px;">Order Placed Successfully!</h1>
+    <p style="color: #666; margin-bottom: 30px;">
+      Thank you for your order. You will receive a confirmation email shortly.
+    </p>
+    <a href="/orders" class="btn">View My Orders</a>
+    <a href="/" class="btn" style="background: #6c757d; margin-left: 10px;">Continue Shopping</a>
+  </div>
+  
+  ${getFooter()}
+</body>
+</html>`);
+});
 // ADDRESSES PAGE (User's Address Book)
 app.get("/addresses", (req, res) => {
   if (!req.session.userId) {
