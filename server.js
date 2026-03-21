@@ -23,7 +23,6 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const bcrypt = require("bcrypt");
-const fetch = require("node-fetch");
 const fs = require("fs");
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -92,47 +91,58 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 
   }
 }));
-app.post("/send-otp", async (req, res) => {
-  let phone = req.body.phone;
-  if (!phone) return res.json({ success: false });
 
-  // Ensure phone has country code
-  if (!phone.startsWith('+')) {
-    phone = '+91' + phone; // or just '91' + phone, depending on API
-  }
+app.use(passport.initialize());
+app.use(passport.session());
 
-  const otp = Math.floor(100000 + Math.random() * 900000);
-  req.session.otp = otp;
+app.get('/auth/google',
+passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login-user' }),
+  (req, res) => {
+    try {
 
-  try {
-    const response = await fetch("https://www.fast2sms.com/dev/bulkV2", {
-      method: "POST",
-      headers: {
-        "authorization": process.env.FAST2SMS_API_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        route: "q",
-        message: `Your OTP is ${otp}`,
-        language: "english",
-        numbers: phone.replace(/\+/g, '') // remove + for API
-      })
-    });
+      if (!req.user) {
+        return res.redirect('/login-user');
+      }
+      req.session.loggedIn = true;
 
-    const data = await response.json();
-    console.log("Fast2SMS response:", data); // ✅ log for debugging
+const email = req.user.emails?.[0]?.value || "";
+let users = loadUsers();
 
-    if (data.return === true) {
-      res.json({ success: true });
-    } else {
-      console.error("Fast2SMS error:", data);
-      res.json({ success: false });
+let existingUser = users.find(u => u.email === email);
+
+if (!existingUser) {
+
+  const newUser = {
+    id: Date.now().toString(),
+    name: req.user.displayName || "Google User",
+    email: email,
+    phone: "",
+    createdAt: new Date().toISOString(),
+    provider: "google"
+  };
+
+  users.push(newUser);
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+
+  existingUser = newUser;
+}
+
+req.session.userId = existingUser.id;
+req.session.userName = existingUser.name;
+req.session.userEmail = existingUser.email;
+      
+
+      return res.redirect('/profile');
+
+    } catch (err) {
+      console.error("Google callback error:", err);
+      return res.redirect('/login-user');
     }
-  } catch (err) {
-    console.error("Fast2SMS fetch error:", err);
-    res.json({ success: false });
   }
-});
+);
 
 // Simple static file serving
 app.use("/uploads", express.static("uploads"));
@@ -13489,14 +13499,13 @@ app.post("/reset-password", (req, res) => {
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
   
   console.log("Password reset successful for user:", users[userIndex].email);
-  req.session.otpVerified = false;
+  
   res.redirect("/login-user?success=Password reset successful! Please login with your new password");
 });
 
 
 // REGISTER PAGE
 app.get("/register", (req, res) => {
-
 
   if (req.session.userId) {
     return res.redirect("/profile");
@@ -13670,14 +13679,6 @@ app.get("/register", (req, res) => {
       margin-bottom: 20px;
       text-align: center;
     }
-    input[type="tel"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13730,27 +13731,11 @@ app.get("/register", (req, res) => {
   <label class="form-label">Email Address *</label>
   <input type="email" name="email" class="form-input" placeholder="Enter your email" required>
 </div>
+
 <div class="form-group">
-  <label class="form-label">Phone Number *</label>
-
-  <input type="tel" name="phone" id="phone" class="form-input"
-    placeholder="Enter phone number" required pattern="[0-9]{10}">
-
-  <button type="button" onclick="sendOTP()" class="otp-btn">
-    Send OTP
-  </button>
-
-  <div id="otpBox" style="display:none; margin-top:10px;">
-    <input type="text" id="otp" class="form-input"
-      placeholder="Enter OTP">
-
-    <button type="button" onclick="verifyOTP()" class="otp-btn">
-      Verify OTP
-    </button>
-  </div>
+  <label class="form-label">Phone Number</label>
+ <input type="tel" name="phone" placeholder="Enter phone number" required pattern="[0-9]{10}">
 </div>
-
-
 
 <div class="form-group">
   <label class="form-label">Password *</label>
@@ -13855,133 +13840,75 @@ Create Account
       
       return true;
     });
-function sendOTP() {
-  const phone = document.getElementById("phone").value;
-
-  fetch("/send-otp", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ phone })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert("OTP sent");
-    }
-  });
-}
-let otpVerified = false;
-
-function verifyOTP() {
-  const otp = document.getElementById("otp").value;
-  fetch("/verify-otp", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ otp })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert("OTP Verified ✅");
-      otpVerified = true;
-      document.querySelector('button[type="submit"]').disabled = false;
-    } else {
-      alert("Wrong OTP ❌");
-    }
-  });
-}
-
-document.getElementById("registerForm").addEventListener("submit", function(e) {
-  if (!otpVerified) {
-    e.preventDefault();
-    alert("Please verify OTP first");
-    return false;
-  }
-  return true;
-});
-
-}
-
   </script>
-  <script>
-async function sendOTP() {
-  const phone = document.getElementById("phone").value;
-
-  const res = await fetch("/send-otp", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ phone })
-  });
-
-  const data = await res.json();
-
-  if (data.success) {
-    alert("OTP sent ✅");
-    document.getElementById("otpBox").style.display = "block";
-  } else {
-    alert("Failed ❌");
-  }
-}
-
-async function verifyOTP() {
-  const otp = document.getElementById("otp").value;
-
-  const res = await fetch("/verify-otp", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ otp })
-  });
-
-  const data = await res.json();
-
-  if (data.success) {
-    alert("OTP Verified ✅");
-  } else {
-    alert("Wrong OTP ❌");
-  }
-}
-</script>
 </body>
 </html>`);
 });
+
+
 // REGISTER POST - IMPROVED VERSION
 app.post("/register", async (req, res) => {
-  if (!req.session.otpVerified) {
-    return res.send("Please verify OTP first");
+  try {
+    // 🔹 FORM DATA EXTRACT KARO
+    const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
+    if (!phone || !/^[0-9]{10}$/.test(phone)) {
+  return res.send("Enter valid 10-digit phone number");
+}
+    // 🔹 BASIC VALIDATION
+    if (!firstName || !lastName || !email || !password) {
+      return res.redirect("/register?error=All required fields must be filled");
+    }
+    if (password !== confirmPassword) {
+      return res.redirect("/register?error=Passwords do not match");
+    }
+    if (password.length < 8) {
+      return res.redirect("/register?error=Password must be at least 8 characters");
+    }
+    if (!terms) {
+      return res.redirect("/register?error=You must accept terms and conditions");
+    }
+
+    // 🔹 RECAPTCHA VERIFICATION
+    const axios = require("axios");
+    const captcha = req.body["g-recaptcha-response"];
+    const verify = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET}&response=${captcha}`
+    );
+    if (!verify.data.success) {
+      return res.redirect("/register?error=Captcha failed");
+    }
+
+    // 🔹 CHECK IF EMAIL ALREADY EXISTS
+    const users = loadUsers();
+    if (users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+      return res.redirect("/register?error=Email already registered");
+    }
+
+    // 🔹 GENERATE OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // 🔹 SAVE PENDING USER IN SESSION
+    req.session.pendingUser = {
+      firstName,
+      lastName,
+      email,
+      phone,
+      password   // plain password, will hash after OTP verification
+    };
+    req.session.otp = otp;
+
+    // 🔹 SEND OTP EMAIL (with error handling)
+    await transporter.sendMail({
+      to: email,
+      subject: "Sports India Email Verification",
+      text: `Your OTP for registration is ${otp}. It is valid for 10 minutes.`
+    });
+
+    res.redirect("/verify-otp");
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.redirect("/register?error=Something went wrong. Please try again.");
   }
-
-  const { firstName, lastName, email, phone, password, terms, newsletter } = req.body;
-  // ... validation ...
-
-  const users = loadUsers();
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = {
-    id: Date.now().toString(),
-    name: `${firstName} ${lastName}`,
-    email,
-    phone,
-    password: hashedPassword,
-    loginAttempts: 0,
-    lockUntil: null,
-    createdAt: new Date().toISOString()
-  };
-  users.push(newUser);
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-
-  // Clear OTP session data
-  delete req.session.otp;
-  delete req.session.otpVerified;
-  delete req.session.pendingUser;
-
-  req.session.userId = newUser.id;
-  req.session.loggedIn = true;
-  res.redirect("/profile");
 });
 app.get("/verify-otp",(req,res)=>{
 
@@ -14087,15 +14014,40 @@ app.get("/verify-otp",(req,res)=>{
 `);
 
 });
-app.post("/verify-otp", async (req, res) => {
-  const userOtp = req.body.otp;
+app.post("/verify-otp", async (req,res)=>{
 
-  if (userOtp == req.session.otp) {
-    req.session.otpVerified = true;   // ✅ Set flag for registration
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
+  const { otp } = req.body;
+
+  if(otp != req.session.otp){
+    return res.redirect("/verify-otp?error=Invalid OTP");
   }
+
+  const users = loadUsers();
+
+  const user = req.session.pendingUser;
+
+  const hashedPassword = await bcrypt.hash(user.password,10);
+
+  const newUser = {
+    id: Date.now().toString(),
+    name: `${user.firstName} ${user.lastName}`,
+    email: user.email,
+    phone: user.phone,
+    password: hashedPassword,
+    loginAttempts: 0,
+lockUntil: null,
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newUser);
+
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users,null,2));
+
+  req.session.userId = newUser.id;
+  req.session.loggedIn = true;
+
+  res.redirect("/profile");
+
 });
 
 // ADD TO CART FUNCTIONALITY
