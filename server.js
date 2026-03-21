@@ -91,29 +91,41 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 
   }
 }));
-app.post("/send-otp", (req, res) => {
-  const { phone } = req.body;
+app.post("/send-otp", async (req, res) => {
+  const phone = req.body.phone;
 
-  if (!phone) return res.json({ success: false });
+  if (!phone || phone.length !== 10) {
+    return res.json({ success: false, message: "Invalid phone" });
+  }
 
   const otp = Math.floor(100000 + Math.random() * 900000);
 
   req.session.otp = otp;
   req.session.phone = phone;
 
-  console.log("OTP:", otp); // testing
+  try {
+    await fetch("https://www.fast2sms.com/dev/bulkV2", {
+      method: "POST",
+      headers: {
+        "authorization": process.env.FAST2SMS_API_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        route: "q",
+        message: `Your OTP is ${otp}`,
+        language: "english",
+        numbers: phone
+      })
+    });
 
-  res.json({ success: true });
-});
-app.post("/verify-otp", (req, res) => {
-  const { otp } = req.body;
+    console.log("OTP SENT:", otp);
 
-  if (parseInt(otp) === req.session.otp) {
-    req.session.otpVerified = true;
-    return res.json({ success: true });
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("SMS ERROR:", err);
+    res.json({ success: false });
   }
-
-  res.json({ success: false });
 });
 app.use(passport.initialize());
 app.use(passport.session());
@@ -14145,10 +14157,12 @@ app.get("/verify-otp",(req,res)=>{
 });
 app.post("/verify-otp", async (req,res)=>{
 
-  const { otp } = req.body;
+  const userOtp = req.body.otp;
 
-  if(otp != req.session.otp){
-    return res.redirect("/verify-otp?error=Invalid OTP");
+  if (userOtp == req.session.otp) {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
   }
 
   const users = loadUsers();
