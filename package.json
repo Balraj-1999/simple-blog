@@ -12,6 +12,7 @@
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "razorpay": "^2.9.4",
+    "node-fetch": "^2.6.7",
 
     "cookie-parser": "^1.4.6",
     "dotenv": "^17.3.1",
