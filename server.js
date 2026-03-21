@@ -13763,16 +13763,27 @@ app.get("/register", (req, res) => {
   <label class="form-label">Email Address *</label>
   <input type="email" name="email" class="form-input" placeholder="Enter your email" required>
 </div>
-
 <div class="form-group">
-  <label class="form-label">Phone Number</label>
- <input type="tel" name="phone" placeholder="Enter phone number" required pattern="[0-9]{10}">
- <button type="button" onclick="sendOTP()">Send OTP</button>
+  <label class="form-label">Phone Number *</label>
 
-<input type="text" id="otp" placeholder="Enter OTP">
+  <input type="tel" name="phone" id="phone" class="form-input"
+    placeholder="Enter phone number" required pattern="[0-9]{10}">
 
-<button type="button" onclick="verifyOTP()">Verify OTP</button>
+  <button type="button" onclick="sendOTP()" class="otp-btn">
+    Send OTP
+  </button>
+
+  <div id="otpBox" style="display:none; margin-top:10px;">
+    <input type="text" id="otp" class="form-input"
+      placeholder="Enter OTP">
+
+    <button type="button" onclick="verifyOTP()" class="otp-btn">
+      Verify OTP
+    </button>
+  </div>
 </div>
+
+
 
 <div class="form-group">
   <label class="form-label">Password *</label>
@@ -13916,6 +13927,48 @@ function verifyOTP() {
 }
 
   </script>
+  <script>
+async function sendOTP() {
+  const phone = document.getElementById("phone").value;
+
+  const res = await fetch("/send-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ phone })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("OTP sent ✅");
+    document.getElementById("otpBox").style.display = "block";
+  } else {
+    alert("Failed ❌");
+  }
+}
+
+async function verifyOTP() {
+  const otp = document.getElementById("otp").value;
+
+  const res = await fetch("/verify-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ otp })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("OTP Verified ✅");
+  } else {
+    alert("Wrong OTP ❌");
+  }
+}
+</script>
 </body>
 </html>`);
 });
