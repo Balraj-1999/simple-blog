@@ -11475,6 +11475,9 @@ ${cart.map((item, index) => {
 
 // CHECKOUT PAGE - UPDATED (Only COD)
 app.get("/checkout", (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login-user");
+  }
   const cart = req.session.cart || [];
   
   if (cart.length === 0) {
