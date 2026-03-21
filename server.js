@@ -13734,7 +13734,7 @@ app.get("/register", (req, res) => {
 
 <div class="form-group">
   <label class="form-label">Phone Number</label>
-  <input type="tel" name="phone" class="form-input" placeholder="Enter phone number (optional)">
+ <input type="tel" name="phone" placeholder="Enter phone number" required pattern="[0-9]{10}">
 </div>
 
 <div class="form-group">
@@ -13910,18 +13910,106 @@ app.post("/register", async (req, res) => {
 });
 app.get("/verify-otp",(req,res)=>{
 
-  res.send(`
-  <h2>Email Verification</h2>
+ res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email Verification | Sports India</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #e4ecf7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .otp-box {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 350px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      text-align: center;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      letter-spacing: 5px;
+    }
+
+    input:focus {
+      border-color: #e53935;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: #e53935;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #c62828;
+    }
+
+    .resend {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .resend a {
+      color: #e53935;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="otp-box">
+  <h2>Verify Your Email</h2>
+  <p>Enter the OTP sent to your email</p>
 
   <form method="POST" action="/verify-otp">
-
-  <input type="text" name="otp" placeholder="Enter OTP" required>
-
-  <button type="submit">Verify OTP</button>
-
+    <input type="text" name="otp" maxlength="6" placeholder="------" required>
+    <button type="submit">Verify OTP</button>
   </form>
 
-  `);
+  <div class="resend">
+    Didn't receive OTP? <a href="/resend-otp">Resend</a>
+  </div>
+</div>
+
+</body>
+</html>
+`);
 
 });
 app.post("/verify-otp", async (req,res)=>{
