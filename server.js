@@ -13506,17 +13506,9 @@ app.post("/reset-password", (req, res) => {
 
 // REGISTER PAGE
 app.post("/register", (req, res) => {
-
-  const { firstName, lastName, email, phone, password } = req.body;
-
-  // ✅ ADD THIS HERE (STEP 5)
   if (!req.session.phoneVerified) {
     return res.send("Please verify your phone number first");
   }
-
-  const users = loadUsers();
-
-  
   res.send(`<!DOCTYPE html>
 <html>
 <head>
