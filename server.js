@@ -23,6 +23,7 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const bcrypt = require("bcrypt");
+const fetch = require("node-fetch");
 const fs = require("fs");
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -101,6 +102,8 @@ app.post("/send-otp", async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000);
 
   req.session.otp = otp;
+  console.log("Sending OTP to:", phone);
+console.log("Generated OTP:", otp);
 
   try {
     await fetch("https://www.fast2sms.com/dev/bulkV2", {
@@ -113,7 +116,7 @@ app.post("/send-otp", async (req, res) => {
         route: "q",
         message: `Your OTP is ${otp}`,
         language: "english",
-        numbers: phone
+        numbers: "91" + phone
       })
     });
 
