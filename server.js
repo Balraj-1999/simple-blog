@@ -11473,7 +11473,7 @@ ${cart.map((item, index) => {
 </html>`);
 });
 
-// CHECKOUT PAGE
+// CHECKOUT PAGE - UPDATED (Only COD)
 app.get("/checkout", (req, res) => {
   const cart = req.session.cart || [];
   
@@ -11481,23 +11481,15 @@ app.get("/checkout", (req, res) => {
     return res.redirect("/cart");
   }
   
-// Calculate totals safely with fallbacks
-const subtotal = cart.reduce((sum, item) => {
-  const price = parseFloat(item.price) || 0;
-  const quantity = parseInt(item.quantity) || 1;
-  return sum + (price * quantity);
-}, 0);
+  // Calculate totals
+  const subtotal = cart.reduce((sum, item) => {
+    const price = parseFloat(item.price) || 0;
+    const quantity = parseInt(item.quantity) || 1;
+    return sum + (price * quantity);
+  }, 0);
 
-const shipping = subtotal > 999 ? 0 : 49;
-const tax = 0;
-const total = subtotal + shipping + tax;
-
-// Format for display
-const formattedSubtotal = isNaN(subtotal) ? 0 : subtotal;
-const formattedTax = isNaN(tax) ? 0 : tax;
-const formattedTotal = isNaN(total) ? 0 : total;
-// Format order ID - show last 8 digits only for readability
-
+  const shipping = subtotal > 999 ? 0 : 49;
+  const total = subtotal + shipping;
   
   let user = null;
   if (req.session.userId) {
@@ -11528,43 +11520,6 @@ const formattedTotal = isNaN(total) ? 0 : total;
       margin: 50px 0;
     }
     
-    .checkout-steps {
-      display: flex;
-      justify-content: center;
-      gap: 50px;
-      margin-bottom: 50px;
-    }
-    
-    .checkout-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .step-number {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #ddd;
-      color: #666;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 18px;
-    }
-    
-    .step-number.active {
-      background: #e53935;
-      color: white;
-    }
-    
-    .step-label {
-      font-size: 14px;
-      color: #666;
-    }
-    
     .checkout-content {
       display: flex;
       gap: 40px;
@@ -11581,6 +11536,8 @@ const formattedTotal = isNaN(total) ? 0 : total;
       border-radius: 15px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       height: fit-content;
+      position: sticky;
+      top: 20px;
     }
     
     .form-section {
@@ -11597,6 +11554,7 @@ const formattedTotal = isNaN(total) ? 0 : total;
       display: flex;
       align-items: center;
       gap: 10px;
+      color: #111;
     }
     
     .form-row {
@@ -11630,6 +11588,43 @@ const formattedTotal = isNaN(total) ? 0 : total;
       outline: none;
       border-color: #e53935;
       box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .payment-method {
+      border: 2px solid #e53935;
+      border-radius: 10px;
+      padding: 20px;
+      background: rgba(229,57,53,0.05);
+    }
+    
+    .payment-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+    
+    .cod-note {
+      margin-top: 10px;
+      padding: 10px;
+      background: #fff3cd;
+      border-radius: 8px;
+      color: #856404;
+      font-size: 14px;
+    }
+    
+    .cart-item-summary {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .item-image-small {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
     }
     
     .order-summary-item {
@@ -11667,46 +11662,18 @@ const formattedTotal = isNaN(total) ? 0 : total;
       transform: translateY(-2px);
     }
     
-    .payment-methods {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
+    .place-order-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
     }
     
-    .payment-method {
-      border: 2px solid #ddd;
-      border-radius: 10px;
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196f3;
       padding: 15px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .payment-method.selected {
-      border-color: #e53935;
-      background: rgba(229,57,53,0.1);
-    }
-    
-    .payment-icon {
-      font-size: 30px;
-      margin-bottom: 10px;
-    }
-    
-    .cart-item-summary {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .item-image-small {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
       border-radius: 8px;
+      margin-top: 20px;
     }
     
     .guest-checkout {
@@ -11721,7 +11688,22 @@ const formattedTotal = isNaN(total) ? 0 : total;
       font-weight: 600;
       text-decoration: none;
     }
+    
+    @media (max-width: 768px) {
+      .checkout-content {
+        flex-direction: column;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .checkout-summary {
+        position: static;
+      }
+    }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -11729,25 +11711,10 @@ const formattedTotal = isNaN(total) ? 0 : total;
   <div class="checkout-container">
     <div class="checkout-header">
       <h1 style="font-size: 42px; margin-bottom: 10px;">Checkout</h1>
-      <p style="font-size: 18px; color: #666;">Complete your purchase in 3 easy steps</p>
+      <p style="font-size: 18px; color: #666;">Complete your purchase</p>
     </div>
     
-    <div class="checkout-steps">
-      <div class="checkout-step">
-        <div class="step-number active">1</div>
-        <div class="step-label">Shipping</div>
-      </div>
-      <div class="checkout-step">
-        <div class="step-number">2</div>
-        <div class="step-label">Payment</div>
-      </div>
-      <div class="checkout-step">
-        <div class="step-number">3</div>
-        <div class="step-label">Confirmation</div>
-      </div>
-    </div>
-    
-      <form id="checkoutForm">
+    <form id="checkoutForm">
       <div class="checkout-content">
         <div class="checkout-form">
           <div class="form-section">
@@ -11816,66 +11783,12 @@ const formattedTotal = isNaN(total) ? 0 : total;
           <div class="form-section">
             <h2 class="section-title"><i class="fas fa-credit-card"></i> Payment Method</h2>
             
-            <div class="payment-methods">
-              <div class="payment-method selected" onclick="selectPayment('cod')">
-                <div class="payment-icon">💵</div>
-                <div style="font-weight: 600;">Cash on Delivery</div>
-                <small style="color: #666;">Pay when you receive</small>
-                <input type="radio" name="paymentMethod" value="cod" checked style="display: none;">
-              </div>
-              
-              <div class="payment-method" onclick="selectPayment('card')">
-                <div class="payment-icon">💳</div>
-                <div style="font-weight: 600;">Credit/Debit Card</div>
-                <small style="color: #666;">Visa, Mastercard, RuPay</small>
-                <input type="radio" name="paymentMethod" value="card" style="display: none;">
-              </div>
-              
-              <div class="payment-method" onclick="selectPayment('upi')">
-                <div class="payment-icon">📱</div>
-                <div style="font-weight: 600;">UPI</div>
-                <small style="color: #666;">Google Pay, PhonePe, Paytm</small>
-                <input type="radio" name="paymentMethod" value="upi" style="display: none;">
-              </div>
-              
-              <div class="payment-method" onclick="selectPayment('netbanking')">
-                <div class="payment-icon">🏦</div>
-                <div style="font-weight: 600;">Net Banking</div>
-                <small style="color: #666;">All Indian banks</small>
-                <input type="radio" name="paymentMethod" value="netbanking" style="display: none;">
-              </div>
-            </div>
-            
-            <div id="cardDetails" style="display: none; margin-top: 30px;">
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Card Number</label>
-                  <input type="text" name="cardNumber" class="form-input" placeholder="1234 5678 9012 3456">
-                </div>
-                
-                <div class="form-group">
-                  <label class="form-label">Card Holder Name</label>
-                  <input type="text" name="cardName" class="form-input" placeholder="Name on card">
-                </div>
-              </div>
-              
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Expiry Date</label>
-                  <input type="month" name="cardExpiry" class="form-input">
-                </div>
-                
-                <div class="form-group">
-                  <label class="form-label">CVV</label>
-                  <input type="text" name="cardCVV" class="form-input" placeholder="123" maxlength="3">
-                </div>
-              </div>
-            </div>
-            
-            <div id="upiDetails" style="display: none; margin-top: 30px;">
-              <div class="form-group">
-                <label class="form-label">UPI ID</label>
-                <input type="text" name="upiId" class="form-input" placeholder="username@upi">
+            <div class="payment-method">
+              <div class="payment-icon">💵</div>
+              <div style="font-weight: 600; font-size: 18px;">Cash on Delivery</div>
+              <small style="color: #666;">Pay when you receive your order</small>
+              <div class="cod-note">
+                <i class="fas fa-info-circle"></i> Card/UPI payments coming soon!
               </div>
             </div>
           </div>
@@ -11887,12 +11800,16 @@ const formattedTotal = isNaN(total) ? 0 : total;
           <div style="margin-bottom: 25px;">
             ${cart.map(item => `
             <div class="cart-item-summary">
-              <img src="${item.image || '/placeholder.jpg'}" class="item-image-small">
+              ${item.image ? `<img src="${item.image}" class="item-image-small" onerror="this.src='';">` : `
+              <div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-box"></i>
+              </div>
+              `}
               <div style="flex: 1;">
                 <div style="font-weight: 600; margin-bottom: 5px;">${item.name}</div>
                 <div style="color: #666; font-size: 14px;">Qty: ${item.quantity} × ₹${item.price}</div>
               </div>
-              <div style="font-weight: 600;">₹${item.price * item.quantity}</div>
+              <div style="font-weight: 600;">₹${(item.price * item.quantity).toFixed(2)}</div>
             </div>
             `).join('')}
           </div>
@@ -11905,11 +11822,6 @@ const formattedTotal = isNaN(total) ? 0 : total;
           <div class="order-summary-item">
             <span>Shipping</span>
             <span>₹${shipping.toFixed(2)}</span>
-          </div>
-          
-          <div class="order-summary-item">
-            <span>Tax (GST 18%)</span>
-            <span>₹${tax.toFixed(2)}</span>
           </div>
           
           <div class="order-total">
@@ -11932,9 +11844,9 @@ const formattedTotal = isNaN(total) ? 0 : total;
             </div>
           </div>
           
-         <button type="button" onclick="startPayment()" class="place-order-btn">
-Place Order
-</button>
+          <button type="submit" class="place-order-btn">
+            <i class="fas fa-check-circle"></i> Place Order (Pay on Delivery)
+          </button>
           
           <p style="text-align: center; margin-top: 20px; color: #666; font-size: 14px;">
             By placing your order, you agree to our <a href="/terms" style="color: #e53935;">Terms & Conditions</a>
@@ -11947,63 +11859,7 @@ Place Order
   ${getFooter()}
   
   <script>
-    function selectPayment(method) {
-      document.querySelectorAll('.payment-method').forEach(el => {
-        el.classList.remove('selected');
-      });
-      event.currentTarget.classList.add('selected');
-      
-      document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
-        radio.checked = radio.value === method;
-      });
-      
-      document.getElementById('cardDetails').style.display = method === 'card' ? 'block' : 'none';
-      document.getElementById('upiDetails').style.display = method === 'upi' ? 'block' : 'none';
-    }
-    
-    // In your checkout page, modify the form to handle both COD and online payments
-document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-  
-  if (paymentMethod === "cod") {
-    // Submit COD order
-    const formData = new FormData(this);
-    fetch('/place-order', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        window.location = '/order-success';
-      }
-    });
-  } else {
-    // For online payments, just save data and call startPayment
-    const formData = {
-      firstName: document.querySelector('input[name="firstName"]').value,
-      lastName: document.querySelector('input[name="lastName"]').value,
-      email: document.querySelector('input[name="email"]').value,
-      phone: document.querySelector('input[name="phone"]').value,
-      address: document.querySelector('input[name="address"]').value,
-      city: document.querySelector('input[name="city"]').value,
-      state: document.querySelector('input[name="state"]').value,
-      pincode: document.querySelector('input[name="pincode"]').value,
-      country: document.querySelector('input[name="country"]').value
-    };
-    
-    await fetch('/save-checkout-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
-    
-    startPayment();
-  }
-});
-    
+    // Auto-fill address if user is logged in
     ${user && user.address ? `
     document.addEventListener('DOMContentLoaded', function() {
       const address = ${JSON.stringify(user.address)};
@@ -12015,81 +11871,67 @@ document.getElementById('checkoutForm').addEventListener('submit', async functio
       }
     });
     ` : ''}
-  </script>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-async function startPayment() {
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-  
-  // For COD, submit directly
-  if (paymentMethod === "cod") {
-    document.getElementById('checkoutForm').submit();
-    return;
-  }
-  
-  // Save checkout data to session first
-  const formData = {
-    firstName: document.querySelector('input[name="firstName"]').value,
-    lastName: document.querySelector('input[name="lastName"]').value,
-    email: document.querySelector('input[name="email"]').value,
-    phone: document.querySelector('input[name="phone"]').value,
-    address: document.querySelector('input[name="address"]').value,
-    city: document.querySelector('input[name="city"]').value,
-    state: document.querySelector('input[name="state"]').value,
-    pincode: document.querySelector('input[name="pincode"]').value,
-    country: document.querySelector('input[name="country"]').value
-  };
-  
-  // Save checkout data to session
-  await fetch('/save-checkout-data', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  });
-  
-  const res = await fetch("/create-razorpay-order", {
-    method: "POST"
-  });
-  
-  const data = await res.json();
-  
-  if (!data.success) {
-    alert("Cart is empty");
-    return;
-  }
-  
-  const options = {
-    key: data.key,
-    amount: data.amount,
-    currency: "INR",
-    order_id: data.orderId,
-    name: "Sports India",
-    description: "Order Payment",
-    handler: function(response) {
-      fetch("/verify-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(response)
-      })
-      .then(res => res.json())
-      .then(data => {
+    
+    // Handle form submission
+    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const submitBtn = document.querySelector('.place-order-btn');
+      const originalText = submitBtn.innerHTML;
+      
+      // Validate required fields
+      const firstName = document.querySelector('input[name="firstName"]').value;
+      const lastName = document.querySelector('input[name="lastName"]').value;
+      const email = document.querySelector('input[name="email"]').value;
+      const phone = document.querySelector('input[name="phone"]').value;
+      const address = document.querySelector('input[name="address"]').value;
+      const city = document.querySelector('input[name="city"]').value;
+      const state = document.querySelector('input[name="state"]').value;
+      const pincode = document.querySelector('input[name="pincode"]').value;
+      
+      if (!firstName || !lastName || !email || !phone || !address || !city || !state || !pincode) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      if (!email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      
+      if (phone.length < 10) {
+        alert('Please enter a valid phone number');
+        return;
+      }
+      
+      // Show loading state
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
+      submitBtn.disabled = true;
+      
+      try {
+        const response = await fetch('/place-order', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
         if (data.success) {
-          window.location = "/order-success";
+          window.location.href = '/order-success';
         } else {
-          alert("Payment verification failed. Please contact support.");
+          alert(data.error || 'Error placing order. Please try again.');
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
         }
-      });
-    },
-    theme: {
-      color: "#e53935"
-    }
-  };
-  
-  const rzp = new Razorpay(options);
-  rzp.open();
-}
-</script>
-
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Network error. Please check your connection and try again.');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>`);
 });
@@ -12550,6 +12392,7 @@ app.post("/save-checkout-data", (req, res) => {
   req.session.save();
   res.json({ success: true });
 });
+// PLACE ORDER (COD)
 // PLACE ORDER (COD)
 app.post("/place-order", (req, res) => {
   const cart = req.session.cart || [];
@@ -15179,10 +15022,13 @@ app.get("/orders", (req, res) => {
 });
 
 // ORDER SUCCESS PAGE - ADD THIS AFTER YOUR PAYMENT ROUTES
+// ORDER SUCCESS PAGE
 app.get("/order-success", (req, res) => {
-  // Clear cart after successful payment
-  req.session.cart = [];
-  req.session.save();
+  // Clear cart if not already cleared
+  if (req.session.cart) {
+    req.session.cart = [];
+    req.session.save();
+  }
   
   res.send(`<!DOCTYPE html>
 <html>
@@ -15192,8 +15038,6 @@ app.get("/order-success", (req, res) => {
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
-    a { text-decoration: none; color: #111; }
-    a:hover { color: #e53935; }
     
     .success-container {
       max-width: 600px;
@@ -15226,7 +15070,17 @@ app.get("/order-success", (req, res) => {
       border-radius: 10px;
       text-decoration: none;
       font-weight: 600;
-      margin-top: 30px;
+      margin: 10px;
+      transition: all 0.3s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      background: #c62828;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
     }
   </style>
 </head>
@@ -15240,7 +15094,7 @@ app.get("/order-success", (req, res) => {
       Thank you for your order. You will receive a confirmation email shortly.
     </p>
     <a href="/orders" class="btn">View My Orders</a>
-    <a href="/" class="btn" style="background: #6c757d; margin-left: 10px;">Continue Shopping</a>
+    <a href="/" class="btn btn-secondary">Continue Shopping</a>
   </div>
   
   ${getFooter()}
