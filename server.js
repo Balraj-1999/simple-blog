@@ -91,7 +91,30 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 
   }
 }));
+app.post("/send-otp", (req, res) => {
+  const { phone } = req.body;
 
+  if (!phone) return res.json({ success: false });
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  req.session.otp = otp;
+  req.session.phone = phone;
+
+  console.log("OTP:", otp); // testing
+
+  res.json({ success: true });
+});
+app.post("/verify-otp", (req, res) => {
+  const { otp } = req.body;
+
+  if (parseInt(otp) === req.session.otp) {
+    req.session.otpVerified = true;
+    return res.json({ success: true });
+  }
+
+  res.json({ success: false });
+});
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -13499,13 +13522,14 @@ app.post("/reset-password", (req, res) => {
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
   
   console.log("Password reset successful for user:", users[userIndex].email);
-  
+  req.session.otpVerified = false;
   res.redirect("/login-user?success=Password reset successful! Please login with your new password");
 });
 
 
 // REGISTER PAGE
 app.get("/register", (req, res) => {
+
 
   if (req.session.userId) {
     return res.redirect("/profile");
@@ -13679,6 +13703,14 @@ app.get("/register", (req, res) => {
       margin-bottom: 20px;
       text-align: center;
     }
+    input[type="tel"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13735,6 +13767,11 @@ app.get("/register", (req, res) => {
 <div class="form-group">
   <label class="form-label">Phone Number</label>
  <input type="tel" name="phone" placeholder="Enter phone number" required pattern="[0-9]{10}">
+ <button type="button" onclick="sendOTP()">Send OTP</button>
+
+<input type="text" id="otp" placeholder="Enter OTP">
+
+<button type="button" onclick="verifyOTP()">Verify OTP</button>
 </div>
 
 <div class="form-group">
@@ -13840,12 +13877,53 @@ Create Account
       
       return true;
     });
+function sendOTP() {
+  const phone = document.getElementById("phone").value;
+
+  fetch("/send-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ phone })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("OTP sent");
+    }
+  });
+}
+
+function verifyOTP() {
+  const otp = document.getElementById("otp").value;
+
+  fetch("/verify-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ otp })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("OTP verified");
+    } else {
+      alert("Wrong OTP");
+    }
+  });
+}
+
   </script>
 </body>
 </html>`);
 });
 // REGISTER POST - IMPROVED VERSION
 app.post("/register", async (req, res) => {
+  if (!req.session.otpVerified) {
+  return res.send("Please verify OTP first");
+}
   try {
     // 🔹 FORM DATA EXTRACT KARO
     const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
