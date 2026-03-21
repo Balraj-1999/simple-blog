@@ -94,14 +94,13 @@ app.use(session({
 app.post("/send-otp", async (req, res) => {
   const phone = req.body.phone;
 
-  if (!phone || phone.length !== 10) {
-    return res.json({ success: false, message: "Invalid phone" });
+  if (!phone) {
+    return res.json({ success: false });
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000);
 
   req.session.otp = otp;
-  req.session.phone = phone;
 
   try {
     await fetch("https://www.fast2sms.com/dev/bulkV2", {
@@ -118,12 +117,10 @@ app.post("/send-otp", async (req, res) => {
       })
     });
 
-    console.log("OTP SENT:", otp);
-
     res.json({ success: true });
 
   } catch (err) {
-    console.log("SMS ERROR:", err);
+    console.log(err);
     res.json({ success: false });
   }
 });
