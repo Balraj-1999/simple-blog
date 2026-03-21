@@ -13851,7 +13851,9 @@ app.post("/register", async (req, res) => {
   try {
     // 🔹 FORM DATA EXTRACT KARO
     const { firstName, lastName, email, phone, password, confirmPassword, terms, newsletter } = req.body;
-
+    if (!phone || phone.length !== 10) {
+    return res.send("Invalid phone number (must be 10 digits)");
+  }
     // 🔹 BASIC VALIDATION
     if (!firstName || !lastName || !email || !password) {
       return res.redirect("/register?error=All required fields must be filled");
