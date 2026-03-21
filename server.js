@@ -13505,10 +13505,12 @@ app.post("/reset-password", (req, res) => {
 
 
 // REGISTER PAGE
-app.post("/register", (req, res) => {
-  if (!req.session.phoneVerified) {
-    return res.send("Please verify your phone number first");
+app.get("/register", (req, res) => {
+
+  if (req.session.userId) {
+    return res.redirect("/profile");
   }
+  
   res.send(`<!DOCTYPE html>
 <html>
 <head>
@@ -13677,39 +13679,6 @@ app.post("/register", (req, res) => {
       margin-bottom: 20px;
       text-align: center;
     }
-    .phone-input {
-  display: flex;
-  align-items: center;
-  border: 2px solid #e1e5e9;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.country-code {
-  padding: 15px;
-  background: #f1f1f1;
-  font-weight: 600;
-}
-
-.phone-field {
-  border: none !important;
-  flex: 1;
-}
-
-.phone-field:focus {
-  outline: none;
-}
-
-.otp-btn {
-  margin-top: 10px;
-  padding: 10px;
-  width: 100%;
-  background: #e53935;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13764,32 +13733,8 @@ app.post("/register", (req, res) => {
 </div>
 
 <div class="form-group">
-  <label class="form-label">Phone Number *</label>
-
-  <div class="phone-input">
-    <span class="country-code">+91</span>
-    <input 
-      type="tel" 
-      name="phone" 
-      class="form-input phone-field"
-      placeholder="Enter 10 digit number"
-      required
-      pattern="[0-9]{10}"
-      maxlength="10"
-    >
-  </div>
-
-  <!-- OTP BUTTON -->
-  <button type="button" onclick="sendOTP()" class="otp-btn">
-    Send OTP
-  </button>
-
-  <!-- OTP INPUT -->
-  <input type="text" id="otpInput" placeholder="Enter OTP" style="display:none; margin-top:10px;">
-
-  <button type="button" onclick="verifyOTP()" id="verifyBtn" style="display:none; margin-top:10px;">
-    Verify OTP
-  </button>
+  <label class="form-label">Phone Number</label>
+ <input type="tel" name="phone" placeholder="Enter phone number" required pattern="[0-9]{10}">
 </div>
 
 <div class="form-group">
@@ -13896,81 +13841,9 @@ Create Account
       return true;
     });
   </script>
-  ...
-<!-- FORM END -->
-
-<!-- ✅ ADD HERE (JUST BEFORE </body>) -->
-
-<script>
-
-async function sendOTP() {
-  const phone = document.querySelector('input[name="phone"]').value;
-
-  if (phone.length !== 10) {
-    alert("Enter valid phone number");
-    return;
-  }
-
-  const res = await fetch("/send-otp", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ phone })
-  });
-
-  const data = await res.json();
-
-  if (data.success) {
-    alert("OTP sent!");
-    document.getElementById("otpInput").style.display = "block";
-    document.getElementById("verifyBtn").style.display = "block";
-  }
-}
-
-async function verifyOTP() {
-  const otp = document.getElementById("otpInput").value;
-
-  const res = await fetch("/verify-phone-otp", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ otp })
-  });
-
-  const data = await res.json();
-
-  if (data.success) {
-    alert("Phone verified ✅");
-  } else {
-    alert("Invalid OTP ❌");
-  }
-}
-
-</script>
 </body>
 </html>`);
 });
-app.post("/send-otp", (req, res) => {
-  const { phone } = req.body;
-
-  const otp = Math.floor(100000 + Math.random() * 900000);
-
-  req.session.phoneOtp = otp;
-  req.session.phoneNumber = phone;
-
-  console.log("OTP:", otp); // 🔥 testing
-
-  res.json({ success: true });
-});
-app.post("/verify-phone-otp", (req, res) => {
-  const { otp } = req.body;
-
-  if (parseInt(otp) === req.session.phoneOtp) {
-    req.session.phoneVerified = true;
-    return res.json({ success: true });
-  }
-
-  res.json({ success: false });
-});
-
 // REGISTER POST - IMPROVED VERSION
 app.post("/register", async (req, res) => {
   try {
