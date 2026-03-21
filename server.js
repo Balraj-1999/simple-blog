@@ -11843,10 +11843,10 @@ app.get("/checkout", (req, res) => {
               <span>Free shipping on orders above ₹999</span>
             </div>
           </div>
-          
-          <button type="submit" class="place-order-btn">
-            <i class="fas fa-check-circle"></i> Place Order (Pay on Delivery)
-          </button>
+          <button type="button" onclick="startPayment()" class="place-order-btn">
+Pay Now
+</button>
+   
           
           <p style="text-align: center; margin-top: 20px; color: #666; font-size: 14px;">
             By placing your order, you agree to our <a href="/terms" style="color: #e53935;">Terms & Conditions</a>
@@ -11857,81 +11857,124 @@ app.get("/checkout", (req, res) => {
   </div>
   
   ${getFooter()}
-  
   <script>
-    // Auto-fill address if user is logged in
-    ${user && user.address ? `
-    document.addEventListener('DOMContentLoaded', function() {
-      const address = ${JSON.stringify(user.address)};
-      if (address) {
-        document.querySelector('input[name="address"]').value = address.street || '';
-        document.querySelector('input[name="city"]').value = address.city || '';
-        document.querySelector('input[name="state"]').value = address.state || '';
-        document.querySelector('input[name="pincode"]').value = address.pincode || '';
-      }
-    });
-    ` : ''}
-    
-    // Handle form submission
-    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const formData = new FormData(this);
-      const submitBtn = document.querySelector('.place-order-btn');
-      const originalText = submitBtn.innerHTML;
-      
-      // Validate required fields
-      const firstName = document.querySelector('input[name="firstName"]').value;
-      const lastName = document.querySelector('input[name="lastName"]').value;
-      const email = document.querySelector('input[name="email"]').value;
-      const phone = document.querySelector('input[name="phone"]').value;
-      const address = document.querySelector('input[name="address"]').value;
-      const city = document.querySelector('input[name="city"]').value;
-      const state = document.querySelector('input[name="state"]').value;
-      const pincode = document.querySelector('input[name="pincode"]').value;
-      
-      if (!firstName || !lastName || !email || !phone || !address || !city || !state || !pincode) {
-        alert('Please fill in all required fields');
-        return;
-      }
-      
-      if (!email.includes('@')) {
-        alert('Please enter a valid email address');
-        return;
-      }
-      
-      if (phone.length < 10) {
-        alert('Please enter a valid phone number');
-        return;
-      }
-      
-      // Show loading state
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
-      submitBtn.disabled = true;
-      
-      try {
-        const response = await fetch('/place-order', {
-          method: 'POST',
-          body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          window.location.href = '/order-success';
-        } else {
-          alert(data.error || 'Error placing order. Please try again.');
-          submitBtn.innerHTML = originalText;
-          submitBtn.disabled = false;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please check your connection and try again.');
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-      }
-    });
-  </script>
+
+// ✅ Auto-fill address (same as before)
+${user && user.address ? `
+document.addEventListener('DOMContentLoaded', function() {
+  const address = ${JSON.stringify(user.address)};
+  if (address) {
+    document.querySelector('input[name="address"]').value = address.street || '';
+    document.querySelector('input[name="city"]').value = address.city || '';
+    document.querySelector('input[name="state"]').value = address.state || '';
+    document.querySelector('input[name="pincode"]').value = address.pincode || '';
+  }
+});
+` : ''}
+
+
+// ✅ MAIN FUNCTION (button se call hoga)
+function startPayment(){
+
+const method = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+
+// 👉 Validate fields first
+const firstName = document.querySelector('input[name="firstName"]').value;
+const lastName = document.querySelector('input[name="lastName"]').value;
+const email = document.querySelector('input[name="email"]').value;
+const phone = document.querySelector('input[name="phone"]').value;
+const address = document.querySelector('input[name="address"]').value;
+const city = document.querySelector('input[name="city"]').value;
+const state = document.querySelector('input[name="state"]').value;
+const pincode = document.querySelector('input[name="pincode"]').value;
+
+if (!firstName || !lastName || !email || !phone || !address || !city || !state || !pincode) {
+  alert('Please fill all required fields');
+  return;
+}
+
+// 👉 COD flow
+if(method === "cod"){
+  document.getElementById("checkoutForm").submit();
+  return;
+}
+
+// 👉 Razorpay flow
+initiateRazorpay();
+
+}
+
+
+// ✅ Razorpay function
+async function initiateRazorpay(){
+
+const submitBtn = document.querySelector('.place-order-btn');
+const originalText = submitBtn.innerHTML;
+
+submitBtn.innerHTML = 'Processing...';
+submitBtn.disabled = true;
+
+try {
+
+const res = await fetch("/create-razorpay-order",{
+method:"POST"
+});
+
+const data = await res.json();
+
+if(!data.success){
+alert("Cart empty");
+submitBtn.innerHTML = originalText;
+submitBtn.disabled = false;
+return;
+}
+
+const options = {
+
+key:data.key,
+amount:data.amount,
+currency:"INR",
+order_id:data.orderId,
+
+name:"Sports India",
+description:"Order Payment",
+
+handler:function(response){
+
+fetch("/verify-payment",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(response)
+})
+.then(res=>res.json())
+.then(data=>{
+window.location = "/order-success"; // ✅ FIXED
+});
+
+},
+
+theme:{
+color:"#e53935"
+}
+
+};
+
+const rzp = new Razorpay(options);
+rzp.open();
+
+} catch (err){
+console.error(err);
+alert("Payment failed. Try again.");
+submitBtn.innerHTML = originalText;
+submitBtn.disabled = false;
+}
+
+}
+
+</script>
+  
 </body>
 </html>`);
 });
