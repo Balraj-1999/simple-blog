@@ -11783,14 +11783,19 @@ app.get("/checkout", (req, res) => {
           <div class="form-section">
             <h2 class="section-title"><i class="fas fa-credit-card"></i> Payment Method</h2>
             
-            <div class="payment-method">
-              <div class="payment-icon">💵</div>
-              <div style="font-weight: 600; font-size: 18px;">Cash on Delivery</div>
-              <small style="color: #666;">Pay when you receive your order</small>
-              <div class="cod-note">
-                <i class="fas fa-info-circle"></i> Card/UPI payments coming soon!
-              </div>
-            </div>
+         <div class="payment-methods">
+
+  <label class="payment-method">
+    <input type="radio" name="paymentMethod" value="cod" checked>
+    💵 Cash on Delivery
+  </label>
+
+  <label class="payment-method">
+    <input type="radio" name="paymentMethod" value="razorpay">
+    💳 Pay Online (UPI / Card / Netbanking)
+  </label>
+
+</div>
           </div>
         </div>
         
