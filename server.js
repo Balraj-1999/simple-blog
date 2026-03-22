@@ -541,51 +541,44 @@ function getHeader(req) {
   const cartCount = req.session.cart ? req.session.cart.length : 0;
   
   return `
-   <header class="main-header">
- <div style="display:flex;align-items:center;gap:10px;">
-  ${storeLogo ? `
-    <img src="${storeLogo}" style="height:40px;width:40px;border-radius:8px;">
-  ` : `
-    <div style="width:40px;height:40px;background:#e53935;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">
-      SI
-    </div>
-  `}
-  
-  <a href="/" style="color:white;text-decoration:none;font-size:20px;font-weight:bold;">
-    ${storeName}
-  </a>
-</div>
+return `
+<header class="main-header">
 
-  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
- <div style="display:flex;gap:15px;align-items:center;">
+  <!-- LEFT: MENU + LOGO -->
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <span style="font-weight:bold;">${storeName}</span>
+  </div>
 
-  <a href="/cart" style="color:white;text-decoration:none;font-size:18px;">
-    🛒
-  </a>
+  <!-- RIGHT: ICONS -->
+  <div style="display:flex;gap:15px;align-items:center;">
+    <a href="/cart" style="color:white;text-decoration:none;">🛒</a>
 
-  ${req.session.userId ? `
-    <a href="/profile" style="color:white;text-decoration:none;">👤</a>
-  ` : `
-    <a href="/login-user" style="color:white;text-decoration:none;">Login</a>
-  `}
+    ${req.session.userId ? `
+      <a href="/profile" style="color:white;">👤</a>
+    ` : `
+      <a href="/login-user" style="color:white;">Login</a>
+    `}
+  </div>
 
-</div>
+  <!-- MOBILE MENU -->
   <nav class="nav-links" id="navLinks">
     <a href="/">Home</a>
     <a href="/products/filter">Products</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
-    <a href="/cart">🛒 (${cartCount})</a>
 
     ${req.session.userId ? `
-      <a href="/profile">👤 ${userName}</a>
+      <a href="/profile">Profile</a>
       <a href="/logout">Logout</a>
     ` : `
       <a href="/login-user">Login</a>
       <a href="/register">Register</a>
     `}
   </nav>
+
 </header>
+`;
     
     ${showBanner ? `
     <div style="background: ${themeColor}; color: white; text-align: center; padding: 10px; font-weight: 600;">
@@ -694,6 +687,15 @@ function toggleMenu() {
         color: #ddd;
         margin-top: 60px;
       }
+      /* ===== MOBILE MENU FIX ===== */
+.nav-links {
+  display: none;
+}
+
+.nav-links.active {
+  display: flex;
+  flex-direction: column;
+}
       
       .footer-grid {
         max-width: 1200px;
@@ -748,6 +750,7 @@ function toggleMenu() {
         background: #1e1e1e;
         color: #eee;
       }
+      
       /* ===== HEADER RESPONSIVE ===== */
 .main-header {
   display: flex;
@@ -874,6 +877,37 @@ function toggleMenu() {
     display: flex;
   }
 }
+/* ===== GLOBAL MOBILE FIX ===== */
+
+@media (max-width: 768px) {
+
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  /* container full width */
+  .container, .content, .cart-container {
+    width: 100% !important;
+    padding: 10px !important;
+  }
+
+  /* cards fix */
+  .cart-item, .product-card {
+    width: 100% !important;
+  }
+
+  /* flex → column */
+  .flex, .row {
+    flex-direction: column !important;
+  }
+
+  /* buttons full width */
+  button {
+    width: 100%;
+  }
+
+}
     </style>
   `;
 }
@@ -961,18 +995,50 @@ app.get("/", (req, res) => {
     margin: 0 auto;
     max-width: 1400px;
 }
-
 .product-card-modern {
     background: white;
-    border-radius: 16px; /* 👈 change */
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08); /* 👈 change */
-    transition: all 0.4s ease;
-}
-    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: 0.3s;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* IMAGE FIX */
+.product-image-container {
+    height: 140px; /* 👈 fixed height */
+}
+
+/* IMAGE */
+.product-image {
+    object-fit: contain;
+}
+
+/* INFO COMPACT */
+.product-info-modern {
+    padding: 12px;
+}
+
+/* TITLE SMALL */
+.product-title-modern {
+    font-size: 14px;
+}
+
+/* PRICE SMALL */
+.current-price {
+    font-size: 16px;
+}
+
+/* BUTTON SMALL */
+.add-to-cart-btn {
+    padding: 8px;
+    font-size: 12px;
+}
+
+.view-btn-modern {
+    padding: 8px;
+    font-size: 12px;
 }
 
 .product-card-modern:hover {
