@@ -646,7 +646,7 @@ function getFooter() {
           document.body.classList.add("dark");
         }
       };
-      <script>
+<script>
 function toggleMenu() {
   document.getElementById("navLinks").classList.toggle("active");
 }
@@ -738,6 +738,24 @@ function toggleMenu() {
 
 .nav-links {
   display: none;
+  z-index: 9999;
+}
+
+.nav-links a {
+  color: white;
+  padding: 12px 0;
+  border-bottom: 1px solid #333;
+}
+
+.nav-links.active {
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  position: absolute;
+  top: 60px;
+  width: 100%;
+  left: 0;
+  padding: 15px;
 }
 
 .nav-links.active {
@@ -820,6 +838,26 @@ function toggleMenu() {
   .grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px;
+  }
+
+}
+/* ===== CART MOBILE FIX ===== */
+
+@media (max-width: 768px) {
+
+  .cart-item {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .cart-summary {
+    width: 100% !important;
+    margin-top: 20px;
+  }
+
+  .cart-container {
+    display: block !important;
   }
 
 }
