@@ -557,7 +557,19 @@ function getHeader(req) {
 </div>
 
   <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+ <div style="display:flex;gap:15px;align-items:center;">
 
+  <a href="/cart" style="color:white;text-decoration:none;font-size:18px;">
+    🛒
+  </a>
+
+  ${req.session.userId ? `
+    <a href="/profile" style="color:white;text-decoration:none;">👤</a>
+  ` : `
+    <a href="/login-user" style="color:white;text-decoration:none;">Login</a>
+  `}
+
+</div>
   <nav class="nav-links" id="navLinks">
     <a href="/">Home</a>
     <a href="/products/filter">Products</a>
@@ -663,6 +675,12 @@ function getFooter() {
 function toggleMenu() {
   document.getElementById("navLinks").classList.toggle("active");
 }
+<script>
+function toggleMenu() {
+  const nav = document.getElementById("navLinks");
+  nav.classList.toggle("active");
+}
+</script>
 </script>
     </script>
     
@@ -1330,9 +1348,10 @@ app.get("/", (req, res) => {
 }
 
 @media (max-width: 480px) {
-    .products-horizontal-grid {
-        grid-template-columns: 1fr;
-    }
+   .products-horizontal-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
     
     .action-buttons-modern {
         flex-direction: column;
