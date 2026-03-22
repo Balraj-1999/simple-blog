@@ -21,7 +21,7 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
-
+app.use(express.static("public"));
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const transporter = nodemailer.createTransport({
@@ -2155,7 +2155,13 @@ ${bestSellers.length > 0 ? `
         });
     }
   </script>
-
+  <!-- 🔥 ADD HERE -->
+   <div class="mobile-bottom-nav">
+     <a href="/">🏠<br>Home</a>
+     <a href="/products/filter">🛍️<br>Shop</a>
+     <a href="/cart">🛒<br>Cart</a>
+     <a href="/profile">👤<br>Account</a>
+   </div>
 </body>
 </html>`);
 });
@@ -2980,6 +2986,13 @@ app.get("/posts", (req, res) => {
       console.log('Products management page loaded');
     });
   </script>
+    <!-- 🔥 ADD HERE -->
+   <div class="mobile-bottom-nav">
+     <a href="/">🏠<br>Home</a>
+     <a href="/products/filter">🛍️<br>Shop</a>
+     <a href="/cart">🛒<br>Cart</a>
+     <a href="/profile">👤<br>Account</a>
+   </div>
 </body>
 </html>`);
 });
@@ -11992,6 +12005,13 @@ submitBtn.disabled = false;
 }
 
 </script>
+  <!-- 🔥 ADD HERE -->
+   <div class="mobile-bottom-nav">
+     <a href="/">🏠<br>Home</a>
+     <a href="/products/filter">🛍️<br>Shop</a>
+     <a href="/cart">🛒<br>Cart</a>
+     <a href="/profile">👤<br>Account</a>
+   </div>
   
 </body>
 </html>`);
@@ -12436,6 +12456,13 @@ app.get("/order/:orderId", (req, res) => {
       }
     }
   </script>
+    <!-- 🔥 ADD HERE -->
+   <div class="mobile-bottom-nav">
+     <a href="/">🏠<br>Home</a>
+     <a href="/products/filter">🛍️<br>Shop</a>
+     <a href="/cart">🛒<br>Cart</a>
+     <a href="/profile">👤<br>Account</a>
+   </div>
 </body>
 </html>`);
 });
