@@ -541,39 +541,31 @@ function getHeader(req) {
   const cartCount = req.session.cart ? req.session.cart.length : 0;
   
   return `
-    <header style="background:#111;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-size:24px;font-weight:bold;">
-        <a href="/" style="color:white;text-decoration:none;display:flex;align-items:center;gap:10px;">
-          ${storeLogo ? `<img src="${storeLogo}" style="height:40px;vertical-align:middle;">` : ''}
-          ${storeName}
-        </a>
-      </div>
-      
-      <div style="display:flex;gap:15px;align-items:center;">
-        <a href="/" style="color:white;text-decoration:none;">Home</a>
-        <a href="/products/filter" style="color:white;text-decoration:none;">Products</a>
-        <a href="/about" style="color:white;text-decoration:none;">About</a>
-        <a href="/contact" style="color:white;text-decoration:none;">Contact</a>
-        <a href="/cart" style="color:white;text-decoration:none;position:relative;">
-          🛒 Cart
-          ${cartCount > 0 ? `
-          <span style="position:absolute;top:-8px;right:-8px;background:${themeColor};color:white;border-radius:50%;padding:2px 6px;font-size:12px;font-weight:bold;">
-            ${cartCount}
-          </span>
-          ` : ''}
-        </a>
-        ${req.session.userId ? `
-          <a href="/profile" style="color:white;text-decoration:none;">👤 ${userName || 'Profile'}</a>
-          <a href="/logout" style="color:white;text-decoration:none;">Logout</a>
-        ` : `
-          <a href="/login-user" style="color:white;text-decoration:none;">Login</a>
-          <a href="/register" style="color:white;text-decoration:none;">Register</a>
-        `}
-        <button onclick="toggleDark()" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:${themeColor};color:white;">
-          ${settings.darkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
-    </header>
+   <header class="main-header">
+  <div class="logo">
+    <a href="/" style="color:white;text-decoration:none;">
+      ${storeName}
+    </a>
+  </div>
+
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+  <nav class="nav-links" id="navLinks">
+    <a href="/">Home</a>
+    <a href="/products/filter">Products</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    <a href="/cart">🛒 (${cartCount})</a>
+
+    ${req.session.userId ? `
+      <a href="/profile">👤 ${userName}</a>
+      <a href="/logout">Logout</a>
+    ` : `
+      <a href="/login-user">Login</a>
+      <a href="/register">Register</a>
+    `}
+  </nav>
+</header>
     
     ${showBanner ? `
     <div style="background: ${themeColor}; color: white; text-align: center; padding: 10px; font-weight: 600;">
@@ -659,6 +651,11 @@ function getFooter() {
           document.body.classList.add("dark");
         }
       };
+      <script>
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("active");
+}
+</script>
     </script>
     
     <style>
@@ -725,6 +722,57 @@ function getFooter() {
         background: #1e1e1e;
         color: #eee;
       }
+      /* ===== HEADER RESPONSIVE ===== */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  color: white;
+  padding: 15px 20px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: #111;
+    width: 100%;
+    flex-direction: column;
+    display: none;
+    padding: 20px;
+  }
+
+  .nav-links a {
+    padding: 10px 0;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+}
     </style>
   `;
 }
@@ -799,6 +847,9 @@ app.get("/", (req, res) => {
     a { text-decoration: none; color: #111; }
     a:hover { color: #e53935; }
     button { cursor: pointer; }
+    body {
+  overflow-x: hidden;
+}
     
     /* ===== NEW HORIZONTAL GRID STYLES ===== */
 .products-horizontal-grid {
@@ -1190,14 +1241,15 @@ app.get("/", (req, res) => {
 /* ===== END OF NEW STYLES ===== */  
     
     /* Hero Slider */
-    .hero-slider {
-      position: relative;
-      height: 600px;
-      overflow: hidden;
-      border-radius: 20px;
-      margin: 20px auto;
-      max-width: 1400px;
-    }
+   .hero-slider {
+  height: 600px;
+}
+
+@media (max-width: 768px) {
+  .hero-slider {
+    height: 300px;
+  }
+}
     
     .slider-container {
       position: relative;
@@ -1206,19 +1258,15 @@ app.get("/", (req, res) => {
     }
     
     .slider-slide {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      padding: 0 80px;
-    }
+     .slider-slide {
+  padding: 0 80px;
+}
+
+@media (max-width: 768px) {
+  .slider-slide {
+    padding: 0 15px;
+  }
+}
     
     .slider-slide.active {
       opacity: 1;
