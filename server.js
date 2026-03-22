@@ -629,26 +629,14 @@ function getFooter() {
       </div>
     </footer>
     
-    <script>
-      function toggleDark() {
-        document.body.classList.toggle("dark");
-        if (document.body.classList.contains("dark")) {
-          localStorage.setItem("theme", "dark");
-        } else {
-          localStorage.setItem("theme", "light");
-        }
-      }
-      
-      window.onload = function() {
-        const theme = localStorage.getItem("theme");
-        const darkModeSetting = ${darkMode};
-        if (theme === "dark" || (!theme && darkModeSetting)) {
-          document.body.classList.add("dark");
-        }
-      };
-<script>
+  <script>
 function toggleMenu() {
-  document.getElementById("navLinks").classList.toggle("active");
+  var nav = document.getElementById("navLinks");
+  if (nav.style.display === "flex") {
+    nav.style.display = "none";
+  } else {
+    nav.style.display = "flex";
+  }
 }
 </script>
     </script>
@@ -858,6 +846,40 @@ function toggleMenu() {
 
   .cart-container {
     display: block !important;
+  }
+
+}
+/* ===== FORCE NAV MENU FIX ===== */
+
+#navLinks {
+  display: none;
+  flex-direction: column;
+  background: #111;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
+#navLinks a {
+  color: white;
+  padding: 12px;
+  border-bottom: 1px solid #333;
+}
+/* ===== CART FORCE MOBILE FIX ===== */
+
+@media (max-width: 768px) {
+
+  div[style*="display:flex"] {
+    flex-direction: column !important;
+  }
+
+  div[style*="width: 60%"],
+  div[style*="width:60%"],
+  div[style*="width: 40%"],
+  div[style*="width:40%"] {
+    width: 100% !important;
   }
 
 }
