@@ -1656,15 +1656,6 @@ app.get("/", (req, res) => {
         flex-direction: column;
       }
     }
-  /* GLOBAL MOBILE FIX */
-
-@media (max-width:768px){
-
-  div[style*="display:flex"]{
-    flex-direction:column !important;
-  }
-
-}
   </style>
 </head>
 <body>
@@ -11342,35 +11333,6 @@ app.get("/cart", (req, res) => {
       border-radius: 8px;
       cursor: pointer;
     }
-    /* ===== MOBILE CART FIX ===== */
-
-@media (max-width:768px){
-
-  .cart-item{
-    display:flex;
-    flex-direction:column !important;
-    align-items:center;
-    text-align:center;
-  }
-
-  .cart-item img{
-    width:100%;
-    max-width:200px;
-  }
-
-  .quantity-controls{
-    justify-content:center;
-  }
-
-}
-
-@media (max-width:480px){
-
-  h1{
-    font-size:22px;
-  }
-
-}
   </style>
 </head>
 <body>
@@ -11743,15 +11705,6 @@ app.get("/checkout", (req, res) => {
         position: static;
       }
     }
-    /* GLOBAL MOBILE FIX */
-
-@media (max-width:768px){
-
-  div[style*="display:flex"]{
-    flex-direction:column !important;
-  }
-
-}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14247,15 +14200,6 @@ app.get("/profile", (req, res) => {
       padding: 20px;
       margin-bottom: 15px;
     }
-    /* GLOBAL MOBILE FIX */
-
-@media (max-width:768px){
-
-  div[style*="display:flex"]{
-    flex-direction:column !important;
-  }
-
-}
   </style>
 </head>
 <body>
