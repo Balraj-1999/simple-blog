@@ -146,7 +146,7 @@ req.session.userEmail = existingUser.email;
 
 // Simple static file serving
 app.use("/uploads", express.static("uploads"));
-app.use(express.static("simple-blog")); 
+
 /* ===============================
    RAZORPAY PAYMENT ROUTES
    =============================== */
@@ -793,7 +793,6 @@ app.get("/", (req, res) => {
 <head>
   <title>Sports India - Premium Sports Gear</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="manifest" href="/manifest.json"> 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -6407,7 +6406,6 @@ app.get("/product/:slug", (req, res) => {
 <head>
   <title>${product.name} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="manifest" href="/manifest.json">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -11231,7 +11229,6 @@ app.get("/cart", (req, res) => {
 <head>
   <title>Shopping Cart | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="manifest" href="/manifest.json">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
