@@ -1,0 +1,114 @@
+/* ===== RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== BODY ===== */
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
+
+/* ===== HEADER MOBILE ===== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #111;
+  color: white;
+  flex-wrap: wrap;
+}
+
+header a {
+  color: white;
+  text-decoration: none;
+  margin: 5px;
+}
+
+/* ===== MOBILE NAVBAR (AMAZON STYLE) ===== */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  border-top: 1px solid #ddd;
+  z-index: 1000;
+}
+
+.mobile-bottom-nav a {
+  text-align: center;
+  font-size: 12px;
+  color: #333;
+  text-decoration: none;
+}
+
+/* ===== PRODUCT GRID ===== */
+.products-horizontal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+
+.product-card-modern {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+}
+
+/* ===== CART MOBILE ===== */
+.cart-container {
+  padding: 10px;
+}
+
+.cart-item {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.cart-item img {
+  width: 100%;
+  max-width: 200px;
+  margin: auto;
+}
+
+.quantity-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* ===== BUTTON ===== */
+button {
+  padding: 10px;
+  border: none;
+  background: #e53935;
+  color: white;
+  border-radius: 6px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .products-horizontal-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .cart-item {
+    flex-direction: row;
+  }
+}
