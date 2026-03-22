@@ -540,47 +540,49 @@ function getHeader(req) {
   const bannerText = settings.bannerText || '🎉 Free Shipping on Orders Above ₹999!';
   const cartCount = req.session.cart ? req.session.cart.length : 0;
   
-  return `
-    <header style="background:#111;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-size:24px;font-weight:bold;">
-        <a href="/" style="color:white;text-decoration:none;display:flex;align-items:center;gap:10px;">
-          ${storeLogo ? `<img src="${storeLogo}" style="height:40px;vertical-align:middle;">` : ''}
-          ${storeName}
-        </a>
-      </div>
-      
-      <div style="display:flex;gap:15px;align-items:center;">
-        <a href="/" style="color:white;text-decoration:none;">Home</a>
-        <a href="/products/filter" style="color:white;text-decoration:none;">Products</a>
-        <a href="/about" style="color:white;text-decoration:none;">About</a>
-        <a href="/contact" style="color:white;text-decoration:none;">Contact</a>
-        <a href="/cart" style="color:white;text-decoration:none;position:relative;">
-          🛒 Cart
-          ${cartCount > 0 ? `
-          <span style="position:absolute;top:-8px;right:-8px;background:${themeColor};color:white;border-radius:50%;padding:2px 6px;font-size:12px;font-weight:bold;">
-            ${cartCount}
-          </span>
-          ` : ''}
-        </a>
-        ${req.session.userId ? `
-          <a href="/profile" style="color:white;text-decoration:none;">👤 ${userName || 'Profile'}</a>
-          <a href="/logout" style="color:white;text-decoration:none;">Logout</a>
-        ` : `
-          <a href="/login-user" style="color:white;text-decoration:none;">Login</a>
-          <a href="/register" style="color:white;text-decoration:none;">Register</a>
-        `}
-        <button onclick="toggleDark()" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:${themeColor};color:white;">
-          ${settings.darkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
-    </header>
-    
-    ${showBanner ? `
-    <div style="background: ${themeColor}; color: white; text-align: center; padding: 10px; font-weight: 600;">
-      ${bannerText}
-    </div>
-    ` : ''}
-  `;
+return `
+<header class="main-header">
+  <div class="logo">
+    <a href="/">SPORTS INDIA</a>
+  </div>
+
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/products/filter">Products</a>
+    <a href="/cart">Cart</a>
+    <a href="/profile">Profile</a>
+  </div>
+</header>
+
+<style>
+.main-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+  background:#111;
+  color:white;
+  flex-wrap:wrap;
+}
+
+.nav-links {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+@media (max-width:768px){
+  .main-header{
+    flex-direction:column;
+    text-align:center;
+  }
+
+  .nav-links{
+    justify-content:center;
+  }
+}
+</style>
+`;
 }
 
 // Helper function to get footer HTML
@@ -1656,6 +1658,15 @@ app.get("/", (req, res) => {
         flex-direction: column;
       }
     }
+  /* GLOBAL MOBILE FIX */
+
+@media (max-width:768px){
+
+  div[style*="display:flex"]{
+    flex-direction:column !important;
+  }
+
+}
   </style>
 </head>
 <body>
@@ -11333,6 +11344,35 @@ app.get("/cart", (req, res) => {
       border-radius: 8px;
       cursor: pointer;
     }
+    /* ===== MOBILE CART FIX ===== */
+
+@media (max-width:768px){
+
+  .cart-item{
+    display:flex;
+    flex-direction:column !important;
+    align-items:center;
+    text-align:center;
+  }
+
+  .cart-item img{
+    width:100%;
+    max-width:200px;
+  }
+
+  .quantity-controls{
+    justify-content:center;
+  }
+
+}
+
+@media (max-width:480px){
+
+  h1{
+    font-size:22px;
+  }
+
+}
   </style>
 </head>
 <body>
@@ -11705,6 +11745,15 @@ app.get("/checkout", (req, res) => {
         position: static;
       }
     }
+    /* GLOBAL MOBILE FIX */
+
+@media (max-width:768px){
+
+  div[style*="display:flex"]{
+    flex-direction:column !important;
+  }
+
+}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14200,6 +14249,15 @@ app.get("/profile", (req, res) => {
       padding: 20px;
       margin-bottom: 15px;
     }
+    /* GLOBAL MOBILE FIX */
+
+@media (max-width:768px){
+
+  div[style*="display:flex"]{
+    flex-direction:column !important;
+  }
+
+}
   </style>
 </head>
 <body>
