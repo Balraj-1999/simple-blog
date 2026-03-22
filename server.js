@@ -541,26 +541,39 @@ function getHeader(req) {
   const cartCount = req.session.cart ? req.session.cart.length : 0;
   
   return `
-  <header class="main-header">
-
-  <div class="left">
-    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-    <span>${storeName}</span>
-  </div>
-
-  <div class="right">
-    <a href="/cart">🛒</a>
-    <a href="/login-user">👤</a>
-  </div>
-
-  <nav class="nav-links" id="navLinks">
-    <a href="/">Home</a>
-    <a href="/products/filter">Products</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
-  </nav>
-
-</header>
+    <header style="background:#111;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:24px;font-weight:bold;">
+        <a href="/" style="color:white;text-decoration:none;display:flex;align-items:center;gap:10px;">
+          ${storeLogo ? `<img src="${storeLogo}" style="height:40px;vertical-align:middle;">` : ''}
+          ${storeName}
+        </a>
+      </div>
+      
+      <div style="display:flex;gap:15px;align-items:center;">
+        <a href="/" style="color:white;text-decoration:none;">Home</a>
+        <a href="/products/filter" style="color:white;text-decoration:none;">Products</a>
+        <a href="/about" style="color:white;text-decoration:none;">About</a>
+        <a href="/contact" style="color:white;text-decoration:none;">Contact</a>
+        <a href="/cart" style="color:white;text-decoration:none;position:relative;">
+          🛒 Cart
+          ${cartCount > 0 ? `
+          <span style="position:absolute;top:-8px;right:-8px;background:${themeColor};color:white;border-radius:50%;padding:2px 6px;font-size:12px;font-weight:bold;">
+            ${cartCount}
+          </span>
+          ` : ''}
+        </a>
+        ${req.session.userId ? `
+          <a href="/profile" style="color:white;text-decoration:none;">👤 ${userName || 'Profile'}</a>
+          <a href="/logout" style="color:white;text-decoration:none;">Logout</a>
+        ` : `
+          <a href="/login-user" style="color:white;text-decoration:none;">Login</a>
+          <a href="/register" style="color:white;text-decoration:none;">Register</a>
+        `}
+        <button onclick="toggleDark()" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:${themeColor};color:white;">
+          ${settings.darkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
+    </header>
     
     ${showBanner ? `
     <div style="background: ${themeColor}; color: white; text-align: center; padding: 10px; font-weight: 600;">
@@ -629,16 +642,23 @@ function getFooter() {
       </div>
     </footer>
     
-  <script>
-function toggleMenu() {
-  var nav = document.getElementById("navLinks");
-  if (nav.style.display === "flex") {
-    nav.style.display = "none";
-  } else {
-    nav.style.display = "flex";
-  }
-}
-</script>
+    <script>
+      function toggleDark() {
+        document.body.classList.toggle("dark");
+        if (document.body.classList.contains("dark")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      }
+      
+      window.onload = function() {
+        const theme = localStorage.getItem("theme");
+        const darkModeSetting = ${darkMode};
+        if (theme === "dark" || (!theme && darkModeSetting)) {
+          document.body.classList.add("dark");
+        }
+      };
     </script>
     
     <style>
@@ -651,11 +671,6 @@ function toggleMenu() {
         color: #ddd;
         margin-top: 60px;
       }
-       /* 👇 YE ADD KARNA HAI */
-  .main-header {
-    display: flex;
-    justify-content: space-between;
-  }
       
       .footer-grid {
         max-width: 1200px;
@@ -710,179 +725,6 @@ function toggleMenu() {
         background: #1e1e1e;
         color: #eee;
       }
-      .main-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #111;
-  color: white;
-  padding: 12px;
-}
-
-.menu-toggle {
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.nav-links {
-  display: none;
-  z-index: 9999;
-}
-
-.nav-links a {
-  color: white;
-  padding: 12px 0;
-  border-bottom: 1px solid #333;
-}
-
-.nav-links.active {
-  display: flex;
-  flex-direction: column;
-  background: #111;
-  position: absolute;
-  top: 60px;
-  width: 100%;
-  left: 0;
-  padding: 15px;
-}
-
-.nav-links.active {
-  display: flex;
-  flex-direction: column;
-  background: #111;
-  position: absolute;
-  top: 60px;
-  width: 100%;
-  left: 0;
-  padding: 15px;
-}
-@media (max-width: 768px) {
-
-  body {
-    overflow-x: hidden;
-  }
-
-  .container, .cart-container {
-    width: 100% !important;
-    padding: 10px !important;
-  }
-
-  .cart-item {
-    flex-direction: column !important;
-  }
-
-  button {
-    width: 100%;
-  }
-
-}
-/* ===== GLOBAL MOBILE RESPONSIVE (ALL PAGES) ===== */
-
-@media (max-width: 768px) {
-
-  body {
-    overflow-x: hidden;
-    padding: 0;
-    margin: 0;
-  }
-
-  /* ALL PAGE CONTAINERS */
-  .container, .content, .form-container, .cart-container {
-    width: 100% !important;
-    padding: 10px !important;
-  }
-
-  /* FLEX TO COLUMN */
-  .row, .flex, .cart-item {
-    flex-direction: column !important;
-    gap: 10px;
-  }
-
-  /* IMAGES RESPONSIVE */
-  img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  /* BUTTON FULL WIDTH */
-  button, .btn {
-    width: 100%;
-    font-size: 14px;
-  }
-
-  /* INPUT FIX */
-  input, select, textarea {
-    width: 100%;
-    font-size: 14px;
-  }
-
-  /* CARDS FIX */
-  .product-card, .cart-card, .form-card {
-    width: 100% !important;
-    margin-bottom: 15px;
-  }
-
-  /* GRID FIX */
-  .grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px;
-  }
-
-}
-/* ===== CART MOBILE FIX ===== */
-
-@media (max-width: 768px) {
-
-  .cart-item {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-  }
-
-  .cart-summary {
-    width: 100% !important;
-    margin-top: 20px;
-  }
-
-  .cart-container {
-    display: block !important;
-  }
-
-}
-/* ===== FORCE NAV MENU FIX ===== */
-
-#navLinks {
-  display: none;
-  flex-direction: column;
-  background: #111;
-  position: absolute;
-  top: 60px;
-  left: 0;
-  width: 100%;
-  z-index: 9999;
-}
-
-#navLinks a {
-  color: white;
-  padding: 12px;
-  border-bottom: 1px solid #333;
-}
-/* ===== CART FORCE MOBILE FIX ===== */
-
-@media (max-width: 768px) {
-
-  div[style*="display:flex"] {
-    flex-direction: column !important;
-  }
-
-  div[style*="width: 60%"],
-  div[style*="width:60%"],
-  div[style*="width: 40%"],
-  div[style*="width:40%"] {
-    width: 100% !important;
-  }
-
-}
     </style>
   `;
 }
@@ -1337,38 +1179,9 @@ app.get("/", (req, res) => {
 }
 
 @media (max-width: 480px) {
-  .products-horizontal-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .product-card-modern {
-    border-radius: 10px;
-  }
-
-  .product-image-container {
-    height: 130px;
-  }
-
-  .product-info-modern {
-    padding: 10px;
-  }
-
-  .product-title-modern {
-    font-size: 13px;
-  }
-
-  .current-price {
-    font-size: 15px;
-  }
-
-  .add-to-cart-btn,
-  .view-btn-modern {
-    padding: 6px;
-    font-size: 11px;
-  }
-}
+    .products-horizontal-grid {
+        grid-template-columns: 1fr;
+    }
     
     .action-buttons-modern {
         flex-direction: column;
@@ -11520,16 +11333,6 @@ app.get("/cart", (req, res) => {
       border-radius: 8px;
       cursor: pointer;
     }
-    .cart-item {
-  display: flex;
-  gap: 15px;
-}
-
-@media (max-width: 768px) {
-  .cart-item {
-    flex-direction: column;
-  }
-}
   </style>
 </head>
 <body>
@@ -13035,11 +12838,6 @@ app.get("/login-user", (req, res) => {
       margin-bottom: 20px;
       text-align: center;
     }
-    .form-container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
-}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13881,11 +13679,6 @@ app.get("/register", (req, res) => {
       margin-bottom: 20px;
       text-align: center;
     }
-    .form-container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
-}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
