@@ -860,5 +860,92 @@
       .newsletter-form {
         flex-direction: column;
       }
+       /* ===== HEADER STYLES ===== */
+.main-header {
+  background: #111;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo a {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  height: 40px;
+  vertical-align: middle;
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #e53935;
+}
+
+.cart-link {
+  position: relative;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--theme-color, #e53935);
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.dark-mode-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--theme-color, #e53935);
+  color: white;
+}
+
+/* Banner */
+.announcement-banner {
+  background: var(--theme-color, #e53935);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: 600;
+}
+
+/* Responsive Header */
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .nav-links {
+    margin-top: 10px;
+    justify-content: center;
+  }
+}
     }
   </style>
