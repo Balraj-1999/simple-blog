@@ -1656,6 +1656,56 @@ app.get("/", (req, res) => {
         flex-direction: column;
       }
     }
+    /* ===== MOBILE RESPONSIVE FIX ===== */
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column !important;
+    gap: 10px;
+    text-align: center;
+  }
+
+  header div {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .products-horizontal-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 10px;
+  }
+
+  .hero-slider {
+    height: 300px;
+  }
+
+  .slider-content h1 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-horizontal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slider-content {
+    padding: 15px;
+  }
+
+  .slider-content h1 {
+    font-size: 18px;
+  }
+
+  .slider-content p {
+    font-size: 14px;
+  }
+
+  header a {
+    display: block;
+    margin: 5px 0;
+  }
+}
   </style>
 </head>
 <body>
