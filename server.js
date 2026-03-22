@@ -793,6 +793,7 @@ app.get("/", (req, res) => {
 <head>
   <title>Sports India - Premium Sports Gear</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -2263,6 +2264,7 @@ app.get("/login", (req, res) => {
 <head>
   <title>Admin Login | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -2535,6 +2537,7 @@ app.get("/posts", (req, res) => {
 <head>
   <title>Manage Products | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -3005,6 +3008,7 @@ app.get("/add-product", (req, res) => {
 <head>
   <title>${isEditMode ? 'Edit Product' : 'Add Product'} | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -3750,6 +3754,7 @@ app.get("/about", (req, res) => {
 <head>
   <title>About Us | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -4016,6 +4021,7 @@ app.get("/contact", (req, res) => {
 <head>
   <title>Contact Us | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -4441,6 +4447,7 @@ app.get("/privacy-policy", (req, res) => {
 <head>
   <title>Privacy Policy | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -4758,6 +4765,7 @@ app.get("/terms", (req, res) => {
 <head>
   <title>Terms & Conditions | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -11229,6 +11237,7 @@ app.get("/cart", (req, res) => {
 <head>
   <title>Shopping Cart | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -11505,6 +11514,7 @@ app.get("/checkout", (req, res) => {
 <head>
   <title>Checkout | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -12010,6 +12020,7 @@ app.get("/order/:orderId", (req, res) => {
 <head>
   <title>Order #${order.id} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -12663,6 +12674,7 @@ app.get("/login-user", (req, res) => {
 <head>
   <title>Login | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -13008,6 +13020,7 @@ app.get("/forgot-password", (req, res) => {
 <head>
   <title>Forgot Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -13264,6 +13277,7 @@ app.get("/reset-password", (req, res) => {
 <head>
   <title>Reset Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -13516,6 +13530,7 @@ app.get("/register", (req, res) => {
 <head>
   <title>Register | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -13918,6 +13933,7 @@ app.get("/verify-otp",(req,res)=>{
 <head>
   <title>Email Verification | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   
   <style>
     body {
@@ -14112,6 +14128,7 @@ app.get("/profile", (req, res) => {
 <head>
   <title>My Profile | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -14332,6 +14349,7 @@ app.get("/update-profile", (req, res) => {
 <head>
   <title>Update Profile | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -14614,6 +14632,7 @@ app.get("/change-password", (req, res) => {
 <head>
   <title>Change Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -14818,6 +14837,7 @@ app.get("/orders", (req, res) => {
 <head>
   <title>My Orders | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -15176,6 +15196,7 @@ app.get("/order-success", (req, res) => {
 <head>
   <title>Order Success | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -15256,6 +15277,7 @@ app.get("/addresses", (req, res) => {
 <head>
   <title>My Addresses | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -15751,6 +15773,7 @@ app.get("/track-order/:orderId", (req, res) => {
 <head>
   <title>Track Order #${order.id} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -17938,6 +17961,7 @@ app.get("/products/filter", (req, res) => {
 <head>
   <title>Filter Products | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
