@@ -542,11 +542,19 @@ function getHeader(req) {
   
   return `
    <header class="main-header">
-  <div class="logo">
-    <a href="/" style="color:white;text-decoration:none;">
-      ${storeName}
-    </a>
-  </div>
+ <div style="display:flex;align-items:center;gap:10px;">
+  ${storeLogo ? `
+    <img src="${storeLogo}" style="height:40px;width:40px;border-radius:8px;">
+  ` : `
+    <div style="width:40px;height:40px;background:#e53935;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">
+      SI
+    </div>
+  `}
+  
+  <a href="/" style="color:white;text-decoration:none;font-size:20px;font-weight:bold;">
+    ${storeName}
+  </a>
+</div>
 
   <div class="menu-toggle" onclick="toggleMenu()">☰</div>
 
@@ -773,6 +781,81 @@ function toggleMenu() {
     display: flex;
   }
 }
+/* HEADER CLEAN DESIGN */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #131921;
+  color: white;
+  padding: 12px 20px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-img {
+  height: 40px;
+  width: 40px;
+  border-radius: 8px;
+}
+
+.logo-box {
+  width: 40px;
+  height: 40px;
+  background: #e53935;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* MOBILE */
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 100%;
+    background: #131921;
+    flex-direction: column;
+    display: none;
+    padding: 20px;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+}
     </style>
   `;
 }
@@ -863,10 +946,11 @@ app.get("/", (req, res) => {
 
 .product-card-modern {
     background: white;
-    border-radius: 20px;
+    border-radius: 16px; /* 👈 change */
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08); /* 👈 change */
     transition: all 0.4s ease;
+}
     position: relative;
     display: flex;
     flex-direction: column;
@@ -874,7 +958,7 @@ app.get("/", (req, res) => {
 }
 
 .product-card-modern:hover {
-    transform: translateY(-10px);
+   transform: translateY(-5px);
     box-shadow: 0 30px 45px rgba(229,57,53,0.2);
 }
 
@@ -1168,6 +1252,22 @@ app.get("/", (req, res) => {
 .section-header {
     text-align: center;
     margin: 50px 0 30px;
+}
+/* ===== GLOBAL SPACING FIX ===== */
+.section-header {
+  margin: 60px 0 30px;
+}
+
+.products-horizontal-grid {
+  padding: 30px;
+}
+
+.category-card {
+  margin-bottom: 20px;
+}
+
+.product-card-modern {
+  padding-bottom: 10px;
 }
 
 .section-header h2 {
@@ -1704,6 +1804,7 @@ app.get("/", (req, res) => {
         flex-direction: column;
       }
     }
+ 
   </style>
 </head>
 <body>
