@@ -541,39 +541,26 @@ function getHeader(req) {
   const cartCount = req.session.cart ? req.session.cart.length : 0;
   
   return `
-    <header style="background:#111;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-size:24px;font-weight:bold;">
-        <a href="/" style="color:white;text-decoration:none;display:flex;align-items:center;gap:10px;">
-          ${storeLogo ? `<img src="${storeLogo}" style="height:40px;vertical-align:middle;">` : ''}
-          ${storeName}
-        </a>
-      </div>
-      
-      <div style="display:flex;gap:15px;align-items:center;">
-        <a href="/" style="color:white;text-decoration:none;">Home</a>
-        <a href="/products/filter" style="color:white;text-decoration:none;">Products</a>
-        <a href="/about" style="color:white;text-decoration:none;">About</a>
-        <a href="/contact" style="color:white;text-decoration:none;">Contact</a>
-        <a href="/cart" style="color:white;text-decoration:none;position:relative;">
-          🛒 Cart
-          ${cartCount > 0 ? `
-          <span style="position:absolute;top:-8px;right:-8px;background:${themeColor};color:white;border-radius:50%;padding:2px 6px;font-size:12px;font-weight:bold;">
-            ${cartCount}
-          </span>
-          ` : ''}
-        </a>
-        ${req.session.userId ? `
-          <a href="/profile" style="color:white;text-decoration:none;">👤 ${userName || 'Profile'}</a>
-          <a href="/logout" style="color:white;text-decoration:none;">Logout</a>
-        ` : `
-          <a href="/login-user" style="color:white;text-decoration:none;">Login</a>
-          <a href="/register" style="color:white;text-decoration:none;">Register</a>
-        `}
-        <button onclick="toggleDark()" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:${themeColor};color:white;">
-          ${settings.darkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
-    </header>
+  <header class="main-header">
+
+  <div class="left">
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <span>${storeName}</span>
+  </div>
+
+  <div class="right">
+    <a href="/cart">🛒</a>
+    <a href="/login-user">👤</a>
+  </div>
+
+  <nav class="nav-links" id="navLinks">
+    <a href="/">Home</a>
+    <a href="/products/filter">Products</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+  </nav>
+
+</header>
     
     ${showBanner ? `
     <div style="background: ${themeColor}; color: white; text-align: center; padding: 10px; font-weight: 600;">
@@ -659,6 +646,11 @@ function getFooter() {
           document.body.classList.add("dark");
         }
       };
+      <script>
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("active");
+}
+</script>
     </script>
     
     <style>
@@ -671,6 +663,11 @@ function getFooter() {
         color: #ddd;
         margin-top: 60px;
       }
+       /* 👇 YE ADD KARNA HAI */
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+  }
       
       .footer-grid {
         max-width: 1200px;
@@ -725,6 +722,54 @@ function getFooter() {
         background: #1e1e1e;
         color: #eee;
       }
+      .main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  color: white;
+  padding: 12px;
+}
+
+.menu-toggle {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: none;
+}
+
+.nav-links.active {
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  position: absolute;
+  top: 60px;
+  width: 100%;
+  left: 0;
+  padding: 15px;
+}
+@media (max-width: 768px) {
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .container, .cart-container {
+    width: 100% !important;
+    padding: 10px !important;
+  }
+
+  .cart-item {
+    flex-direction: column !important;
+  }
+
+  button {
+    width: 100%;
+  }
+
+}
     </style>
   `;
 }
@@ -1179,9 +1224,38 @@ app.get("/", (req, res) => {
 }
 
 @media (max-width: 480px) {
-    .products-horizontal-grid {
-        grid-template-columns: 1fr;
-    }
+  .products-horizontal-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .product-card-modern {
+    border-radius: 10px;
+  }
+
+  .product-image-container {
+    height: 130px;
+  }
+
+  .product-info-modern {
+    padding: 10px;
+  }
+
+  .product-title-modern {
+    font-size: 13px;
+  }
+
+  .current-price {
+    font-size: 15px;
+  }
+
+  .add-to-cart-btn,
+  .view-btn-modern {
+    padding: 6px;
+    font-size: 11px;
+  }
+}
     
     .action-buttons-modern {
         flex-direction: column;
