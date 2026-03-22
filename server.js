@@ -770,6 +770,59 @@ function toggleMenu() {
   }
 
 }
+/* ===== GLOBAL MOBILE RESPONSIVE (ALL PAGES) ===== */
+
+@media (max-width: 768px) {
+
+  body {
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* ALL PAGE CONTAINERS */
+  .container, .content, .form-container, .cart-container {
+    width: 100% !important;
+    padding: 10px !important;
+  }
+
+  /* FLEX TO COLUMN */
+  .row, .flex, .cart-item {
+    flex-direction: column !important;
+    gap: 10px;
+  }
+
+  /* IMAGES RESPONSIVE */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* BUTTON FULL WIDTH */
+  button, .btn {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  /* INPUT FIX */
+  input, select, textarea {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  /* CARDS FIX */
+  .product-card, .cart-card, .form-card {
+    width: 100% !important;
+    margin-bottom: 15px;
+  }
+
+  /* GRID FIX */
+  .grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+
+}
     </style>
   `;
 }
@@ -11407,6 +11460,16 @@ app.get("/cart", (req, res) => {
       border-radius: 8px;
       cursor: pointer;
     }
+    .cart-item {
+  display: flex;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .cart-item {
+    flex-direction: column;
+  }
+}
   </style>
 </head>
 <body>
@@ -12912,6 +12975,11 @@ app.get("/login-user", (req, res) => {
       margin-bottom: 20px;
       text-align: center;
     }
+    .form-container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13753,6 +13821,11 @@ app.get("/register", (req, res) => {
       margin-bottom: 20px;
       text-align: center;
     }
+    .form-container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
