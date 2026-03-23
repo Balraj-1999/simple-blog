@@ -557,7 +557,7 @@ function getHeader(req) {
         </a>
       </div>
       
-      <nav class="nav-links">
+     <nav class="nav-links container">
         <a href="/">Home</a>
         <a href="/products/filter">Products</a>
         <a href="/about">About</a>
@@ -800,6 +800,7 @@ app.get("/", (req, res) => {
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<div class="container">
   ${getHeader(req)}
 
   <!-- Hero Slider -->
@@ -1295,7 +1296,7 @@ ${bestSellers.length > 0 ? `
         });
     }
   </script>
-
+</div>
 </body>
 </html>`);
 });
@@ -1407,6 +1408,7 @@ app.get("/login", (req, res) => {
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<div class="container">
   <div class="login-container">
     <div class="login-box">
       <div class="brand-logo">
@@ -1430,7 +1432,8 @@ app.get("/login", (req, res) => {
       </div>
       ` : ''}
       
-      <form method="POST" action="/login">
+      <div class="form-box">
+<form method="POST" action="/login">
         <div class="form-group">
           <label class="form-label">Username</label>
           <input type="text" name="username" class="form-input" placeholder="Enter username" required autofocus>
@@ -1452,6 +1455,7 @@ app.get("/login", (req, res) => {
           <i class="fas fa-sign-in-alt"></i> Login to Dashboard
         </button>
       </form>
+</div>
       
       <div class="login-footer">
         <p>For testing, use: <strong>admin</strong> / <strong>admin123</strong></p>
@@ -1474,6 +1478,7 @@ app.get("/login", (req, res) => {
       }
     });
   </script>
+  </div>
 </body>
 </html>`);
 });
@@ -2547,6 +2552,7 @@ app.get("/contact", (req, res) => {
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<div class="container">
   ${getHeader(req)}
 
   <div class="contact-hero">
@@ -2767,6 +2773,7 @@ app.get("/contact", (req, res) => {
       this.reset();
     });
   </script>
+  </div>
 </body>
 </html>`);
 });
@@ -7121,6 +7128,7 @@ app.get("/cart", (req, res) => {
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<div class="container">
   ${getHeader(req)}
   
   <div class="cart-container">
@@ -7254,6 +7262,7 @@ ${cart.map((item, index) => {
       }
     }
   </script>
+  </div>
 </body>
 </html>`);
 });
@@ -8489,6 +8498,7 @@ app.get("/register", (req, res) => {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+<div class="container">
   ${getHeader(req)}
   
   <div class="auth-container">
@@ -8515,7 +8525,8 @@ app.get("/register", (req, res) => {
         <button class="auth-tab active">Register</button>
       </div>
       
-      <form method="POST" action="/register" id="registerForm">
+     <div class="form-box">
+<form method="POST" action="/register">
 
 <!-- CSRF TOKEN -->
 <!-- RECAPTCHA SCRIPT -->
@@ -8647,6 +8658,7 @@ Create Account
       return true;
     });
   </script>
+  </div>
 </body>
 </html>`);
 });
