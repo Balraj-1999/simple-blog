@@ -662,18 +662,56 @@ function getFooter() {
     </script>
     
     <style>
-      /* ===== QUICK FIX FOR MOBILE ===== */
-      * {
-          box-sizing: border-box;
-      }
-      html, body {
-          width: 100%;
-          overflow-x: hidden;
-      }
-      img, video, iframe, .hero-slider, .product-card-modern, .slider-slide {
-          max-width: 100%;
-          height: auto;
-      }
+  /* Force all elements to respect viewport */
+html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative;
+}
+
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Containers that might cause overflow */
+.products-horizontal-grid,
+.categories-grid,
+.related-grid,
+.slider-container,
+.hero-slider,
+.product-card-modern,
+.category-card,
+.product-detail-container,
+.filter-container,
+.checkout-container,
+.cart-container,
+.orders-container,
+.profile-container,
+.wishlist-container,
+.addresses-container,
+.track-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* Specific element overrides */
+.product-card-modern,
+.category-card,
+.slider-slide {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Ensure images are responsive */
+img {
+    max-width: 100%;
+    height: auto;
+}
       :root {
         --theme-color: ${themeColor};
       }
