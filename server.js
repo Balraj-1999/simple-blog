@@ -70,7 +70,7 @@ const session = require("express-session");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
 app.use(helmet());
-app.set('trust proxy', 1);  // 👈 Add this line
+app.set('trust proxy', 1);
 // Basic middleware - no security restrictions
 
 
@@ -146,7 +146,6 @@ req.session.userEmail = existingUser.email;
 
 // Simple static file serving
 app.use("/uploads", express.static("uploads"));
-app.use(express.static("public"));
 
 /* ===============================
    RAZORPAY PAYMENT ROUTES
@@ -541,46 +540,43 @@ function getHeader(req) {
   const bannerText = settings.bannerText || '🎉 Free Shipping on Orders Above ₹999!';
   const cartCount = req.session.cart ? req.session.cart.length : 0;
   
-  // We'll pass the themeColor as a CSS custom property for dynamic styling
   return `
-    <style>
-      .main-header { background: #111; }
-      .cart-count { background: ${themeColor}; }
-      .dark-mode-btn { background: ${themeColor}; }
-      .announcement-banner { background: ${themeColor}; }
-    </style>
-    <header class="main-header">
-      <div class="logo">
-        <a href="/">
-          ${storeLogo ? `<img src="${storeLogo}" alt="${storeName}">` : ''}
+    <header style="background:#111;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:24px;font-weight:bold;">
+        <a href="/" style="color:white;text-decoration:none;display:flex;align-items:center;gap:10px;">
+          ${storeLogo ? `<img src="${storeLogo}" style="height:40px;vertical-align:middle;">` : ''}
           ${storeName}
         </a>
       </div>
       
-      <nav class="nav-links">
-        <a href="/">Home</a>
-        <a href="/products/filter">Products</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-        <a href="/cart" class="cart-link">
+      <div style="display:flex;gap:15px;align-items:center;">
+        <a href="/" style="color:white;text-decoration:none;">Home</a>
+        <a href="/products/filter" style="color:white;text-decoration:none;">Products</a>
+        <a href="/about" style="color:white;text-decoration:none;">About</a>
+        <a href="/contact" style="color:white;text-decoration:none;">Contact</a>
+        <a href="/cart" style="color:white;text-decoration:none;position:relative;">
           🛒 Cart
-          ${cartCount > 0 ? `<span class="cart-count">${cartCount}</span>` : ''}
+          ${cartCount > 0 ? `
+          <span style="position:absolute;top:-8px;right:-8px;background:${themeColor};color:white;border-radius:50%;padding:2px 6px;font-size:12px;font-weight:bold;">
+            ${cartCount}
+          </span>
+          ` : ''}
         </a>
         ${req.session.userId ? `
-          <a href="/profile">👤 ${userName || 'Profile'}</a>
-          <a href="/logout">Logout</a>
+          <a href="/profile" style="color:white;text-decoration:none;">👤 ${userName || 'Profile'}</a>
+          <a href="/logout" style="color:white;text-decoration:none;">Logout</a>
         ` : `
-          <a href="/login-user">Login</a>
-          <a href="/register">Register</a>
+          <a href="/login-user" style="color:white;text-decoration:none;">Login</a>
+          <a href="/register" style="color:white;text-decoration:none;">Register</a>
         `}
-        <button onclick="toggleDark()" class="dark-mode-btn">
+        <button onclick="toggleDark()" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:${themeColor};color:white;">
           ${settings.darkMode ? '☀️' : '🌙'}
         </button>
-      </nav>
+      </div>
     </header>
     
     ${showBanner ? `
-    <div class="announcement-banner">
+    <div style="background: ${themeColor}; color: white; text-align: center; padding: 10px; font-weight: 600;">
       ${bannerText}
     </div>
     ` : ''}
@@ -797,7 +793,870 @@ app.get("/", (req, res) => {
 <head>
   <title>Sports India - Premium Sports Gear</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    /* ===== NEW HORIZONTAL GRID STYLES ===== */
+.products-horizontal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1400px;
+}
+
+.product-card-modern {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    transition: all 0.4s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.product-card-modern:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 45px rgba(229,57,53,0.2);
+}
+
+.product-image-container {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.product-card-modern:hover .product-image {
+    transform: scale(1.1);
+}
+
+.discount-badge-modern {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+}
+
+.wishlist-btn-modern {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    color: #ff4757;
+    font-size: 20px;
+}
+
+.wishlist-btn-modern:hover {
+    background: #ff4757;
+    color: white;
+}
+
+.product-info-modern {
+    padding: 20px;
+    background: linear-gradient(to bottom, white, #f8f9fa);
+}
+
+.product-category-modern {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+.product-title-modern {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 10px 0;
+    color: #2d3436;
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.product-title-modern a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.price-container-modern {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.current-price {
+    font-size: 24px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e53935, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.original-price {
+    font-size: 16px;
+    color: #b2bec3;
+    text-decoration: line-through;
+}
+
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.stars {
+    color: #ffd700;
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.rating-count {
+    color: #636e72;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.stock-status {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+.in-stock {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+}
+
+.low-stock {
+    background: linear-gradient(135deg, #f2994a, #f2c94c);
+    color: white;
+}
+
+.out-of-stock {
+    background: linear-gradient(135deg, #eb5757, #f2994a);
+    color: white;
+}
+
+.action-buttons-modern {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.add-to-cart-btn {
+    flex: 2;
+    background: linear-gradient(135deg, #e53935, #ff6b6b);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(229,57,53,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #c62828, #e53935);
+    transform: translateY(-2px);
+}
+
+.quick-view-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-view-btn:hover {
+    background: linear-gradient(135deg, #34495e, #2980b9);
+    transform: translateY(-2px);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 2;
+}
+/* New Badge for New Arrivals */
+.new-badge-modern {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 5px 15px rgba(0,176,155,0.3);
+    animation: pulse 2s infinite;
+}
+
+/* Bestseller Badge */
+.bestseller-badge-modern {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 5px 15px rgba(241,196,15,0.3);
+    animation: shine 2s infinite;
+}
+
+/* View All Button */
+.view-all-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+}
+
+.view-all-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(52,152,219,0.4);
+}
+
+.view-all-btn i {
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+}
+
+.view-all-btn:hover i {
+    transform: translateX(5px);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shine {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+.section-header {
+    text-align: center;
+    margin: 50px 0 30px;
+}
+
+.section-header h2 {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+    padding: 0 20px;
+}
+
+.category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 10px 25px;
+    border: 2px solid transparent;
+    background: white;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #2c3e50;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: linear-gradient(135deg, #e53935, #ff6b6b);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(229,57,53,0.3);
+}
+
+@media (max-width: 768px) {
+    .products-horizontal-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+    }
+    
+    .product-title-modern {
+        font-size: 16px;
+    }
+    
+    .current-price {
+        font-size: 20px;
+    }
+    
+    .section-header h2 {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-horizontal-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons-modern {
+        flex-direction: column;
+    }
+}
+/* ===== END OF NEW STYLES ===== */  
+    
+    /* Hero Slider */
+    .hero-slider {
+      position: relative;
+      height: 600px;
+      overflow: hidden;
+      border-radius: 20px;
+      margin: 20px auto;
+      max-width: 1400px;
+    }
+    
+    .slider-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .slider-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      padding: 0 80px;
+    }
+    
+    .slider-slide.active {
+      opacity: 1;
+    }
+    
+    .slider-content {
+      max-width: 600px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 40px;
+      border-radius: 15px;
+      color: white;
+    }
+    
+    .slider-content h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: white;
+    }
+    
+    .slider-content p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    
+    .slider-btn {
+      display: inline-block;
+      background: #e53935;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      transition: all 0.3s;
+    }
+    
+    .slider-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .slider-controls {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    
+    .slider-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .slider-dot.active {
+      background: #e53935;
+      transform: scale(1.2);
+    }
+    
+    .slider-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.3s;
+    }
+    
+    .slider-nav:hover {
+      background: #e53935;
+    }
+    
+    .slider-prev {
+      left: 20px;
+    }
+    
+    .slider-next {
+      right: 20px;
+    }
+    
+/* Categories Section */
+.categories-section {
+  max-width: 1400px;
+  margin: 80px auto;
+  padding: 0 20px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-title h2 {
+  font-size: 36px;
+  margin-bottom: 15px;
+  color: #111;
+}
+
+.section-title p {
+  color: #666;
+  font-size: 18px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.category-card {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  height: 250px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.category-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.category-card:hover .category-content {
+  transform: scale(1.05);
+}
+
+.category-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.category-overlay {
+  text-align: center;
+  color: white;
+  z-index: 2;
+}
+
+.category-overlay h3 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.category-overlay p {
+  font-size: 14px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Add pattern overlay */
+.category-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.1) 0px,
+    rgba(255,255,255,0.1) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .category-icon {
+    font-size: 60px;
+  }
+  
+  .category-overlay h3 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .category-card {
+    height: 200px;
+  }
+}
+    
+    /* Features Section */
+    .features-section {
+      max-width: 1400px;
+      margin: 80px auto;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      color: white;
+      text-align: center;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-top: 50px;
+    }
+    
+    .feature-item {
+      text-align: center;
+    }
+    
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    
+    .feature-item h3 {
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+    
+    /* Testimonials */
+    .testimonials-section {
+      max-width: 1400px;
+      margin: 80px auto;
+      padding: 0 20px;
+    }
+    
+    .testimonial-card {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin: 0 15px;
+    }
+    
+    .testimonial-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #666;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+     .action-buttons-modern {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.view-btn-modern {
+    flex: 1;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+}
+
+.view-btn-modern:hover {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.add-to-cart-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #e53935, #ff6b6b);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 5px 15px rgba(229,57,53,0.3);
+}
+
+.add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #c62828, #e53935);
+    transform: translateY(-2px);
+} 
+    
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #e53935;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    
+    /* Newsletter */
+    .newsletter-section {
+      max-width: 1400px;
+      margin: 80px auto;
+      padding: 60px 20px;
+      background: #f8f9fa;
+      border-radius: 20px;
+      text-align: center;
+    }
+    
+    .newsletter-form {
+      max-width: 500px;
+      margin: 30px auto 0;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .newsletter-input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    
+    .newsletter-btn {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 992px) {
+      .hero-slider {
+        height: 500px;
+      }
+      
+      .slider-slide {
+        padding: 0 40px;
+      }
+      
+      .slider-content h1 {
+        font-size: 36px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero-slider {
+        height: 400px;
+        border-radius: 10px;
+      }
+      
+      .slider-slide {
+        padding: 0 20px;
+      }
+      
+      .slider-content {
+        padding: 25px;
+      }
+      
+      .slider-content h1 {
+        font-size: 28px;
+      }
+      
+      .slider-content p {
+        font-size: 16px;
+      }
+      
+      .slider-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+      
+      .newsletter-form {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -1404,7 +2263,139 @@ app.get("/login", (req, res) => {
 <head>
   <title>Admin Login | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    
+    .login-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 450px;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .login-header h1 {
+      font-size: 32px;
+      color: #111;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .login-header p {
+      color: #666;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .login-btn {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    
+    .login-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .login-footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #666;
+    }
+    
+    .login-footer a {
+      color: #e53935;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .brand-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .brand-logo h2 {
+      font-size: 28px;
+      color: #e53935;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="login-container">
@@ -1544,7 +2535,267 @@ app.get("/posts", (req, res) => {
 <head>
   <title>Manage Products | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .posts-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .page-actions {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .search-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    
+    .search-btn {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .category-filter {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    
+    .category-btn {
+      padding: 8px 20px;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .category-btn.active {
+      background: #e53935;
+      color: white;
+      border-color: #e53935;
+    }
+    
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .post-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+    }
+    
+    .post-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .post-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .post-content {
+      padding: 25px;
+    }
+    
+    .post-category {
+      display: inline-block;
+      background: #f0f0f0;
+      color: #666;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .post-title {
+      font-size: 20px;
+      margin: 0 0 10px 0;
+      color: #111;
+    }
+    
+    .post-price {
+      font-size: 24px;
+      color: #e53935;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    
+    .post-stock {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    
+    .stock-in {
+      color: #4caf50;
+    }
+    
+    .stock-out {
+      color: #f44336;
+    }
+    
+    .post-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      grid-column: 1 / -1;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 40px;
+    }
+    
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+    }
+    
+    .page-btn.active {
+      background: #e53935;
+      color: white;
+      border-color: #e53935;
+    }
+    
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      flex: 1;
+    }
+    
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      color: #e53935;
+      margin-bottom: 5px;
+    }
+    
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .posts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+      
+      .stats-bar {
+        flex-direction: column;
+      }
+    }
+  </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -1754,7 +3005,143 @@ app.get("/add-product", (req, res) => {
 <head>
   <title>${isEditMode ? 'Edit Product' : 'Add Product'} | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .product-form-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 20px 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .form-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 50px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 25px; }
+    .form-group { margin-bottom: 25px; }
+    .form-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 16px; }
+    .form-label.required::after { content: " *"; color: #e53935; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px; transition: all 0.3s; font-family: inherit; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #e53935; box-shadow: 0 0 0 3px rgba(229,57,53,0.1); }
+    .form-textarea { min-height: 150px; resize: vertical; }
+    .btn { padding: 15px 30px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; font-size: 16px; transition: all 0.3s; }
+    .btn-primary { background: #e53935; color: white; }
+    .btn-primary:hover { background: #c62828; transform: translateY(-2px); }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-outline { background: white; color: #e53935; border: 2px solid #e53935; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+    
+    .sizes-section { border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
+    .sizes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .size-stock-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    .size-stock-table th { background: #f8f9fa; padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+    .size-stock-table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+    .size-stock-table input { width: 80px; padding: 8px; border: 2px solid #e1e5e9; border-radius: 6px; text-align: center; }
+    .add-size-row { display: flex; gap: 10px; align-items: center; margin-top: 15px; }
+    .add-size-input { flex: 1; padding: 10px; border: 2px solid #e1e5e9; border-radius: 8px; }
+    .add-size-btn { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .delete-size-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .stock-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .badge-in-stock { background: #d4edda; color: #155724; }
+    .badge-out-stock { background: #f8d7da; color: #721c24; }
+    .total-stock { font-size: 18px; font-weight: bold; color: #111; margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; }
+    
+    .price-container { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+    .price-input-group { flex: 2; position: relative; }
+    .price-input-group .currency { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-weight: 600; color: #666; }
+    .price-input-group .price-field { padding-left: 35px; }
+    .discount-badge { background: #28a745; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+    .original-price { text-decoration: line-through; color: #999; font-size: 14px; }
+    .final-price { font-size: 20px; font-weight: bold; color: #e53935; }
+    .discount-input-group { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+    .discount-input { width: 100px; padding: 10px; border: 2px solid #e1e5e9; border-radius: 8px; text-align: center; }
+    .discount-type { padding: 10px; border: 2px solid #e1e5e9; border-radius: 8px; }
+    
+    .category-container { border: 2px solid #e1e5e9; border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #f8f9fa; }
+    .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .category-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+    .category-tab { padding: 10px 20px; border: 2px solid #e1e5e9; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .category-tab.active { background: #e53935; color: white; border-color: #e53935; }
+    .category-select-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    .subcategory-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .subcategory-item { padding: 8px 15px; background: #f8f9fa; border: 2px solid #e1e5e9; border-radius: 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    .subcategory-item.selected { background: #e53935; color: white; border-color: #e53935; }
+    
+    .toggle-switch { display: flex; align-items: center; gap: 15px; }
+    .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #e53935; }
+    input:checked + .slider:before { transform: translateX(26px); }
+    
+    .file-upload { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+    .file-upload input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+    .file-upload-label { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px; border: 2px dashed #ced4da; border-radius: 10px; background: #f8f9fa; cursor: pointer; transition: all 0.3s; }
+    .file-upload-label:hover { border-color: #e53935; background: #f0f0f0; }
+    .file-upload-label i { font-size: 48px; color: #6c757d; margin-bottom: 15px; }
+    .image-preview { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+    .preview-image { width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd; }
+    /* Add these styles inside the existing <style> tag */
+.existing-images {
+    margin-bottom: 20px;
+}
+
+.existing-image-item {
+    position: relative;
+    width: 120px;
+}
+
+.existing-image-item img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+}
+
+.existing-image-item button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#newImagePreview div {
+    position: relative;
+    width: 120px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#newImagePreview img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #28a745;
+}
+
+#newImagePreview button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+  </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -1867,19 +3254,19 @@ app.get("/add-product", (req, res) => {
                 <th>Stock Quantity</th>
                 <th>Status</th>
                 <th>Actions</th>
-              </tr>
+               </tr>
             </thead>
             <tbody id="sizeStockBody">
               ${product && product.sizeStock ? Object.entries(product.sizeStock).map(([size, stock]) => `
-              <tr>
-                <td><input type="text" name="size_names[]" value="${size}" class="form-input" style="width: 80px;" readonly></td>
-                <td><input type="number" name="size_stocks[]" value="${stock}" class="form-input" min="0" style="width: 80px;" onchange="updateTotalStock()"></td>
-                <td><span class="stock-badge ${stock > 0 ? 'badge-in-stock' : 'badge-out-stock'}">${stock > 0 ? 'In Stock' : 'Out of Stock'}</span></td>
-                <td><button type="button" class="delete-size-btn" onclick="removeSizeRow(this)"><i class="fas fa-trash"></i></button></td>
-              </tr>
+               <tr>
+                 <td><input type="text" name="size_names[]" value="${size}" class="form-input" style="width: 80px;" readonly></td>
+                 <td><input type="number" name="size_stocks[]" value="${stock}" class="form-input" min="0" style="width: 80px;" onchange="updateTotalStock()"></td>
+                 <td><span class="stock-badge ${stock > 0 ? 'badge-in-stock' : 'badge-out-stock'}">${stock > 0 ? 'In Stock' : 'Out of Stock'}</span></td>
+                 <td><button type="button" class="delete-size-btn" onclick="removeSizeRow(this)"><i class="fas fa-trash"></i></button></td>
+               </tr>
               `).join('') : ''}
             </tbody>
-          </table>
+           </table>
           
           <div class="add-size-row">
             <input type="text" id="newSize" class="add-size-input" placeholder="Size (e.g., S, M, L, XL)">
@@ -2363,7 +3750,92 @@ app.get("/about", (req, res) => {
 <head>
   <title>About Us | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .hero-section {
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/uploads/about-hero.jpg');
+      background-size: cover;
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+      margin-bottom: 50px;
+    }
+    
+    .about-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .mission-vision {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin: 50px 0;
+    }
+    
+    .mv-card {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .team-section {
+      margin: 60px 0;
+    }
+    
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    
+    .team-member {
+      text-align: center;
+    }
+    
+    .member-img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      color: #e53935;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 50px 0;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .stat-number {
+      font-size: 48px;
+      font-weight: bold;
+      color: #e53935;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -2544,7 +4016,183 @@ app.get("/contact", (req, res) => {
 <head>
   <title>Contact Us | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .contact-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .contact-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 80px 20px;
+      margin-bottom: 50px;
+      border-radius: 0 0 20px 20px;
+    }
+    
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      margin-bottom: 60px;
+    }
+    
+    .contact-form {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .contact-info {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+    
+    .info-icon {
+      width: 50px;
+      height: 50px;
+      background: #e53935;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-right: 20px;
+      flex-shrink: 0;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .form-textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: #e53935;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .submit-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(229,57,53,0.3);
+    }
+    
+    .store-locations {
+      margin: 60px 0;
+    }
+    
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    
+    .store-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: transform 0.3s;
+    }
+    
+    .store-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .map-container {
+      margin-top: 50px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .faq-section {
+      margin: 60px 0;
+    }
+    
+    .faq-item {
+      background: white;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .faq-question {
+      padding: 20px;
+      background: #f8f9fa;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .faq-answer {
+      padding: 0 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    
+    .faq-answer.show {
+      padding: 20px;
+      max-height: 500px;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -2793,7 +4441,89 @@ app.get("/privacy-policy", (req, res) => {
 <head>
   <title>Privacy Policy | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .policy-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .policy-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .policy-content {
+      background: white;
+      padding: 50px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .section {
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .section:last-child {
+      border-bottom: none;
+    }
+    
+    .highlight-box {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 10px;
+      border-left: 4px solid #e53935;
+      margin: 30px 0;
+    }
+    
+    .update-date {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      margin-top: 50px;
+    }
+    
+    .toc {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 10px;
+      margin: 30px 0;
+    }
+    
+    .toc ul {
+      columns: 2;
+      list-style: none;
+      padding: 0;
+    }
+    
+    .toc li {
+      margin-bottom: 10px;
+    }
+    
+    .toc a {
+      color: #e53935;
+      text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+      .toc ul {
+        columns: 1;
+      }
+      
+      .policy-content {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -3028,7 +4758,69 @@ app.get("/terms", (req, res) => {
 <head>
   <title>Terms & Conditions | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .terms-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .terms-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .terms-content {
+      background: white;
+      padding: 50px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .section {
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      padding: 25px;
+      border-radius: 10px;
+      margin: 30px 0;
+    }
+    
+    .acceptance-box {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      padding: 25px;
+      border-radius: 10px;
+      margin: 30px 0;
+      text-align: center;
+    }
+    
+    .highlight {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #e53935;
+    }
+    
+    @media (max-width: 768px) {
+      .terms-content {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -3317,9 +5109,326 @@ app.get("/admin", (req, res) => {
 <head>
     <title>Admin Dashboard | Sports India</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        a { text-decoration: none; color: #111; }
+        a:hover { color: #e53935; }
+        button { cursor: pointer; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .stat-card:nth-child(1)::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .stat-card:nth-child(1) .stat-icon { background: #667eea; }
+        .stat-card:nth-child(2) .stat-icon { background: #f5576c; }
+        .stat-card:nth-child(3) .stat-icon { background: #4facfe; }
+        .stat-card:nth-child(4) .stat-icon { background: #43e97b; }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #111;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .stat-change.positive { color: #28a745; }
+        .stat-change.negative { color: #dc3545; }
+        
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .card-title {
+            font-size: 22px;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #212529;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: #e53935;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e53935;
+            color: #e53935;
+        }
+        .btn-outline:hover {
+            background: #e53935;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .quick-action {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #212529;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .quick-action-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+            color: white;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 32px;
+            color: #111;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-header p {
+            color: #6c757d;
+        }
+        
+        @media (max-width: 992px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .content-card {
+                padding: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -3581,7 +5690,243 @@ app.get("/admin/add-slider", (req, res) => {
 <head>
   <title>${isEditMode ? 'Edit Slider' : 'Add Slider'} | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .slider-form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .form-card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+    
+    .form-label.required::after {
+      content: " *";
+      color: #e53935;
+    }
+    
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .file-upload {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    .file-upload input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .file-upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 20px;
+      border: 2px dashed #ced4da;
+      border-radius: 10px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .file-upload-label:hover {
+      border-color: #e53935;
+      background: #f0f0f0;
+    }
+    
+    .file-upload-label i {
+      font-size: 48px;
+      color: #6c757d;
+      margin-bottom: 15px;
+    }
+    
+    .image-preview {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    
+    .preview-image {
+      width: 150px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #e53935;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -3779,7 +6124,142 @@ app.get("/admin/sliders", (req, res) => {
 <head>
   <title>Manage Sliders | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .sliders-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .sliders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .slider-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+      position: relative;
+    }
+    
+    .slider-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .slider-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .slider-content {
+      padding: 25px;
+    }
+    
+    .slider-title {
+      font-size: 20px;
+      margin: 0 0 10px 0;
+      color: #111;
+    }
+    
+    .slider-status {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status-active {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-inactive {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .slider-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      grid-column: 1 / -1;
+    }
+    
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .sliders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+  </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -3926,7 +6406,308 @@ app.get("/product/:slug", (req, res) => {
 <head>
   <title>${product.name} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .product-detail-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .product-main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      margin-bottom: 60px;
+    }
+    
+    .product-images {
+      position: sticky;
+      top: 20px;
+    }
+    
+    .main-image {
+      width: 100%;
+      height: 500px;
+      object-fit: contain;
+      background: #f8f9fa;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      border: 1px solid #eee;
+    }
+    
+    .thumbnail-images {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-top: 15px;
+    }
+    
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+    
+    .thumbnail:hover {
+      transform: scale(1.05);
+      border-color: #e53935;
+    }
+    
+    .thumbnail.active {
+      border-color: #e53935;
+      transform: scale(1.05);
+    }
+    
+    .product-info h1 {
+      font-size: 32px;
+      margin: 0 0 15px 0;
+    }
+    
+    .product-price {
+      font-size: 36px;
+      color: #e53935;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    
+    .product-meta {
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .product-stock {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .stock-in { color: #28a745; }
+    .stock-out { color: #dc3545; }
+    
+    .product-actions {
+      display: flex;
+      gap: 15px;
+      margin: 30px 0;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+      flex: 2;
+    }
+    
+    .btn-primary:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+      flex: 1;
+    }
+    
+    .product-details {
+      margin-top: 40px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #eee;
+      margin-bottom: 30px;
+    }
+    
+    .tab {
+      padding: 15px 30px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .tab.active {
+      color: #e53935;
+    }
+    
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #e53935;
+    }
+    
+    .tab-content {
+      padding: 30px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .related-products {
+      margin: 60px 0;
+    }
+    
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    
+    .size-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    
+    .size-option {
+      min-width: 60px;
+      height: 40px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 0 10px;
+    }
+    
+    .size-option.selected {
+      border-color: #e53935;
+      background: #e53935;
+      color: white;
+    }
+      .size-option.out-of-stock {
+  background: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.size-option.out-of-stock:hover {
+  transform: none;
+  border-color: #f5c6cb;
+}
+    
+    .color-options {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+    }
+    
+    .color-option.selected {
+      border-color: #333;
+      transform: scale(1.1);
+    }
+    
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .quantity-btn {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #ddd;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    
+    .rating-summary {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .average-rating {
+      font-size: 48px;
+      font-weight: bold;
+      color: #e53935;
+    }
+    
+    @media (max-width: 992px) {
+      .product-main {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .product-images {
+        position: static;
+      }
+      
+      .main-image {
+        height: 400px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .product-actions {
+        flex-direction: column;
+      }
+      
+      .product-meta {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -4408,7 +7189,217 @@ app.get("/admin/analytics", (req, res) => {
 <head>
   <title>Analytics Dashboard | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .analytics-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .analytics-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      color: #111;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #111;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .stat-change {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    
+    .stat-change.positive { color: #28a745; }
+    .stat-change.negative { color: #dc3545; }
+    
+    .chart-container {
+      height: 300px;
+      margin-top: 20px;
+    }
+    
+    .status-indicators {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    
+    .data-table th {
+      background: #f8f9fa;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #212529;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    .data-table td {
+      padding: 15px;
+      border-bottom: 1px solid #dee2e6;
+      vertical-align: middle;
+    }
+    
+    .data-table tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .progress-bar {
+      height: 10px;
+      background: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 5px;
+    }
+    
+    .time-filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .time-filter {
+      padding: 10px 20px;
+      border: 2px solid #e1e5e9;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .time-filter.active {
+      background: #e53935;
+      color: white;
+      border-color: #e53935;
+    }
+    
+    .metric-card {
+      text-align: center;
+      padding: 25px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .metric-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 24px;
+      color: white;
+    }
+    
+    .metric-card:nth-child(1) .metric-icon { background: #667eea; }
+    .metric-card:nth-child(2) .metric-icon { background: #f5576c; }
+    .metric-card:nth-child(3) .metric-icon { background: #4facfe; }
+    .metric-card:nth-child(4) .metric-icon { background: #43e97b; }
+    .metric-card:nth-child(5) .metric-icon { background: #fa709a; }
+    .metric-card:nth-child(6) .metric-icon { background: #fee140; }
+    
+    @media (max-width: 768px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .page-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .time-filters {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -4569,7 +7560,7 @@ app.get("/admin/analytics", (req, res) => {
           </thead>
           <tbody>
             ${topProducts.slice(0, 5).map(product => `
-            <tr>
+             <tr>
               <td>
                 <div style="display: flex; align-items: center; gap: 10px;">
                   ${product.image ? `
@@ -4917,7 +7908,317 @@ app.get("/admin/settings", (req, res) => {
 <head>
   <title>Settings | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .settings-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .settings-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    
+    .settings-tab {
+      padding: 12px 25px;
+      border: 2px solid #e1e5e9;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.3s;
+    }
+    
+    .settings-tab.active {
+      background: #e53935;
+      color: white;
+      border-color: #e53935;
+    }
+    
+    .settings-content {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+    
+    .form-label.required::after {
+      content: " *";
+      color: #e53935;
+    }
+    
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #e53935;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    .color-picker {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .color-preview {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+    }
+    
+    .file-upload {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    .file-upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      border: 2px dashed #ced4da;
+      border-radius: 10px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .file-upload-label:hover {
+      border-color: #e53935;
+      background: #f0f0f0;
+    }
+    
+    .file-upload-label i {
+      font-size: 48px;
+      color: #6c757d;
+      margin-bottom: 15px;
+    }
+    
+    .image-preview {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    
+    .preview-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+    }
+    
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    
+    .setting-card {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 10px;
+      border-left: 4px solid #e53935;
+    }
+    
+    .danger-zone {
+      background: #f8d7da;
+      border-color: #dc3545;
+      padding: 30px;
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+    
+    .danger-zone h3 {
+      color: #721c24;
+      margin-top: 0;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .settings-tabs {
+        flex-wrap: wrap;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -5510,7 +8811,9 @@ app.get("/admin/manage-sections", (req, res) => {
 <head>
     <title>Manage Sections | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Your existing styles */
+    </style>
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -5694,7 +8997,112 @@ app.get("/admin/categories", (req, res) => {
 <head>
   <title>Manage Categories | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .categories-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .category-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .category-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .subcategory-list {
+      padding: 20px;
+    }
+    
+    .subcategory-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .subcategory-item:last-child {
+      border-bottom: none;
+    }
+    
+    .add-subcategory {
+      padding: 20px;
+      background: #f8f9fa;
+      border-top: 1px solid #eee;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .form-input {
+      padding: 8px;
+      border: 2px solid #e1e5e9;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
   ${getAdminHeader(req)}
@@ -6211,7 +9619,288 @@ app.get("/admin/customers", (req, res) => {
 <head>
   <title>Customers | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .customers-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .search-filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+    }
+    
+    .search-input {
+      flex: 1;
+      min-width: 300px;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    
+    .filter-select {
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      background: white;
+    }
+    
+    .search-btn {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #111;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .customers-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .customers-table th {
+      background: #f8f9fa;
+      padding: 20px;
+      text-align: left;
+      font-weight: 600;
+      color: #212529;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    .customers-table td {
+      padding: 20px;
+      border-bottom: 1px solid #dee2e6;
+      vertical-align: middle;
+    }
+    
+    .customers-table tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .customer-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-active {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-inactive {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn {
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    
+    .customer-details-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 40px;
+    }
+    
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .page-btn.active {
+      background: #e53935;
+      color: white;
+      border-color: #e53935;
+    }
+    
+    .export-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 992px) {
+      .customers-table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .search-filters {
+        flex-direction: column;
+      }
+      
+      .search-input {
+        min-width: auto;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .stats-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -6312,7 +10001,7 @@ app.get("/admin/customers", (req, res) => {
       </thead>
       <tbody>
         ${filteredCustomers.map(customer => `
-        <tr>
+         <tr>
           <td>
             <div style="display: flex; align-items: center; gap: 15px;">
               <div class="customer-avatar">
@@ -6683,7 +10372,186 @@ app.get("/admin/edit-customer/:id", (req, res) => {
 <head>
   <title>Edit Customer | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .edit-customer-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .form-card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #e53935;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .page-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getAdminHeader(req)}
@@ -6879,7 +10747,250 @@ app.get("/product/:slug/reviews", (req, res) => {
 <head>
   <title>Reviews - ${product.name} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .reviews-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .product-header {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 50px;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .product-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    
+    .rating-summary {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 40px;
+    }
+    
+    .overall-rating {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .rating-number {
+      font-size: 64px;
+      font-weight: bold;
+      color: #e53935;
+      margin-bottom: 10px;
+    }
+    
+    .rating-stars {
+      font-size: 28px;
+      color: #ffc107;
+      margin-bottom: 10px;
+    }
+    
+    .rating-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .rating-bar {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+    
+    .rating-fill {
+      height: 100%;
+      background: #ffc107;
+    }
+    
+    .reviews-list {
+      margin-bottom: 50px;
+    }
+    
+    .review-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .reviewer-avatar {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    
+    .review-date {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .review-rating {
+      color: #ffc107;
+      font-size: 20px;
+    }
+    
+    .review-images {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .review-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .review-form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: 5px;
+      margin-bottom: 20px;
+    }
+    
+    .star-rating input {
+      display: none;
+    }
+    
+    .star-rating label {
+      font-size: 30px;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+      color: #ffc107;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    
+    .form-textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    .submit-btn {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .submit-btn:hover {
+      background: #c62828;
+    }
+    
+    .verified-badge {
+      display: inline-block;
+      background: #d4edda;
+      color: #155724;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .helpful-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .helpful-btn {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      padding: 5px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    @media (max-width: 768px) {
+      .product-header {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -7118,7 +11229,111 @@ app.get("/cart", (req, res) => {
 <head>
   <title>Shopping Cart | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .cart-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .cart-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .cart-content {
+      display: flex;
+      gap: 30px;
+    }
+    
+    .cart-items {
+      flex: 2;
+    }
+    
+    .cart-summary {
+      flex: 1;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      height: fit-content;
+    }
+    
+    .cart-item {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    
+    .item-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    
+    .item-details {
+      flex: 1;
+    }
+    
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .quantity-btn {
+      width: 35px;
+      height: 35px;
+      border: 2px solid #ddd;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .checkout-btn {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    
+    .remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -7290,7 +11505,207 @@ app.get("/checkout", (req, res) => {
 <head>
   <title>Checkout | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .checkout-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .checkout-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .checkout-content {
+      display: flex;
+      gap: 40px;
+    }
+    
+    .checkout-form {
+      flex: 2;
+    }
+    
+    .checkout-summary {
+      flex: 1;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    
+    .form-section {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #111;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input, .form-select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .payment-method {
+      border: 2px solid #e53935;
+      border-radius: 10px;
+      padding: 20px;
+      background: rgba(229,57,53,0.05);
+    }
+    
+    .payment-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+    
+    .cod-note {
+      margin-top: 10px;
+      padding: 10px;
+      background: #fff3cd;
+      border-radius: 8px;
+      color: #856404;
+      font-size: 14px;
+    }
+    
+    .cart-item-summary {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .item-image-small {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .order-summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
+    .order-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #eee;
+    }
+    
+    .place-order-btn {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: all 0.3s;
+    }
+    
+    .place-order-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .place-order-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    
+    .guest-checkout {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+    
+    .guest-checkout a {
+      color: #e53935;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+      .checkout-content {
+        flex-direction: column;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .checkout-summary {
+        position: static;
+      }
+    }
+  </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -7595,7 +12010,223 @@ app.get("/order/:orderId", (req, res) => {
 <head>
   <title>Order #${order.id} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .order-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 30px 0;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .order-details {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .order-section {
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .order-section:last-child {
+      border-bottom: none;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #111;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .info-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    
+    .info-label {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .info-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .status-completed {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-processing {
+      background: #cce5ff;
+      color: #004085;
+    }
+    
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .order-items {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .order-items th {
+      background: #f8f9fa;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    .order-items td {
+      padding: 15px;
+      border-bottom: 1px solid #dee2e6;
+      vertical-align: middle;
+    }
+    
+    .order-items tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .product-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .order-total {
+      margin-top: 30px;
+      text-align: right;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 30px;
+      margin-bottom: 10px;
+      padding: 10px 0;
+    }
+    
+    .grand-total {
+      font-size: 24px;
+      font-weight: bold;
+      color: #e53935;
+      border-top: 2px solid #eee;
+      padding-top: 20px;
+      margin-top: 10px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .order-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -8032,7 +12663,182 @@ app.get("/login-user", (req, res) => {
 <head>
   <title>Login | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .auth-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .auth-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      margin: 50px 0;
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .auth-tab {
+      flex: 1;
+      padding: 15px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #666;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .auth-tab.active {
+      color: #e53935;
+      border-bottom-color: #e53935;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .auth-btn {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .auth-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .auth-divider {
+      text-align: center;
+      margin: 30px 0;
+      position: relative;
+    }
+    
+    .auth-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #eee;
+    }
+    
+    .auth-divider span {
+      background: white;
+      padding: 0 20px;
+      color: #666;
+    }
+    
+    .social-login {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .social-btn {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #ddd;
+      background: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .social-btn.google:hover {
+      border-color: #db4437;
+      color: #db4437;
+    }
+    
+    .social-btn.facebook:hover {
+      border-color: #4267B2;
+      color: #4267B2;
+    }
+    
+    .auth-footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #666;
+    }
+    
+    .auth-footer a {
+      color: #e53935;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -8202,7 +13008,130 @@ app.get("/forgot-password", (req, res) => {
 <head>
   <title>Forgot Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .auth-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .auth-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      margin: 50px 0;
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .auth-header h1 {
+      font-size: 32px;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    
+    .auth-header p {
+      color: #666;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .auth-btn {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 15px;
+    }
+    
+    .auth-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .back-link a {
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .back-link a:hover {
+      color: #e53935;
+    }
+    
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 14px;
+      color: #0c5460;
+    }
+  </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -8335,7 +13264,109 @@ app.get("/reset-password", (req, res) => {
 <head>
   <title>Reset Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .auth-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .auth-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      margin: 50px 0;
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .auth-header h1 {
+      font-size: 32px;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    
+    .auth-header p {
+      color: #666;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .auth-btn {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .auth-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .password-strength {
+      margin-top: 5px;
+      height: 4px;
+      background: #eee;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -8485,7 +13516,170 @@ app.get("/register", (req, res) => {
 <head>
   <title>Register | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .auth-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .auth-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      margin: 50px 0;
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .auth-tab {
+      flex: 1;
+      padding: 15px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #666;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .auth-tab.active {
+      color: #e53935;
+      border-bottom-color: #e53935;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .auth-btn {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .auth-btn:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .terms-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    
+    .terms-check input[type="checkbox"] {
+      margin-top: 5px;
+    }
+    
+    .terms-check label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .terms-check a {
+      color: #e53935;
+      text-decoration: none;
+    }
+    
+    .auth-footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #666;
+    }
+    
+    .auth-footer a {
+      color: #e53935;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .password-strength {
+      margin-top: 5px;
+      height: 4px;
+      background: #eee;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -8725,7 +13919,78 @@ app.get("/verify-otp",(req,res)=>{
   <title>Email Verification | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-<link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #e4ecf7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .otp-box {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 350px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      text-align: center;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      letter-spacing: 5px;
+    }
+
+    input:focus {
+      border-color: #e53935;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: #e53935;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #c62828;
+    }
+
+    .resend {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .resend a {
+      color: #e53935;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+  </style>
 </head>
 
 <body>
@@ -8847,7 +14112,95 @@ app.get("/profile", (req, res) => {
 <head>
   <title>My Profile | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .profile-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .profile-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+    }
+    
+    .profile-content {
+      display: flex;
+      gap: 30px;
+    }
+    
+    .profile-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+    }
+    
+    .profile-main {
+      flex: 1;
+    }
+    
+    .profile-nav {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .nav-item:hover, .nav-item.active {
+      background: rgba(229,57,53,0.1);
+      color: #e53935;
+    }
+    
+    .nav-item i {
+      width: 25px;
+      margin-right: 15px;
+      font-size: 18px;
+    }
+    
+    .profile-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .order-item {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -8979,7 +14332,127 @@ app.get("/update-profile", (req, res) => {
 <head>
   <title>Update Profile | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .profile-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+    }
+    
+    .form-card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+      width: 100%;
+    }
+    
+    .btn-primary:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -9141,7 +14614,81 @@ app.get("/change-password", (req, res) => {
 <head>
   <title>Change Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .password-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .password-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .form-card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 50px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      background: #e53935;
+      color: white;
+      font-size: 16px;
+    }
+    
+    .btn:hover {
+      background: #c62828;
+    }
+    
+    .password-strength {
+      margin-top: 5px;
+      height: 4px;
+      background: #eee;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -9271,7 +14818,259 @@ app.get("/orders", (req, res) => {
 <head>
   <title>My Orders | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .orders-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .orders-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .orders-header h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+    
+    .orders-header p {
+      color: #666;
+      font-size: 18px;
+    }
+    
+    .orders-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #e53935;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .order-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    
+    .order-header {
+      background: #f8f9fa;
+      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .order-id {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111;
+    }
+    
+    .order-date {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .order-status {
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-processing {
+      background: #cce5ff;
+      color: #004085;
+    }
+    
+    .status-completed {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .order-body {
+      padding: 25px;
+    }
+    
+    .order-items {
+      margin-bottom: 20px;
+    }
+    
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    
+    .item-details {
+      flex: 1;
+    }
+    
+    .item-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .item-price {
+      color: #e53935;
+      font-weight: 600;
+    }
+    
+    .item-quantity {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .order-footer {
+      background: #f8f9fa;
+      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #eee;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .order-total {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .order-total span {
+      color: #e53935;
+      margin-left: 10px;
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .btn-outline:hover {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .empty-orders {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .empty-orders h2 {
+      margin: 20px 0;
+    }
+    
+    .empty-orders p {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    @media (max-width: 768px) {
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .order-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .order-actions {
+        width: 100%;
+        flex-direction: column;
+      }
+      
+      .order-item {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -9377,7 +15176,54 @@ app.get("/order-success", (req, res) => {
 <head>
   <title>Order Success | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    
+    .success-container {
+      max-width: 600px;
+      margin: 100px auto;
+      text-align: center;
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    }
+    
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: #4caf50;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px;
+      font-size: 50px;
+      color: white;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: #e53935;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 10px;
+      transition: all 0.3s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      background: #c62828;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -9410,7 +15256,251 @@ app.get("/addresses", (req, res) => {
 <head>
   <title>My Addresses | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .addresses-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .addresses-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .addresses-header h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+    
+    .addresses-header p {
+      color: #666;
+      font-size: 18px;
+    }
+    
+    .addresses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .address-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    .address-card.default {
+      border: 2px solid #e53935;
+    }
+    
+    .address-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #e53935;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .address-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      padding-right: 80px;
+    }
+    
+    .address-details {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .address-details p {
+      margin: 5px 0;
+    }
+    
+    .address-actions {
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .btn-outline:hover {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .add-address-card {
+      background: #f8f9fa;
+      border: 2px dashed #ddd;
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 250px;
+    }
+    
+    .add-address-card:hover {
+      border-color: #e53935;
+      background: #f0f0f0;
+    }
+    
+    .add-address-card i {
+      font-size: 48px;
+      color: #999;
+      margin-bottom: 20px;
+    }
+    
+    .add-address-card h3 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .add-address-card p {
+      color: #666;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 30px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    
+    .empty-addresses {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .addresses-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -9661,7 +15751,361 @@ app.get("/track-order/:orderId", (req, res) => {
 <head>
   <title>Track Order #${order.id} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .track-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .track-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .track-header h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+    
+    .track-header p {
+      color: #666;
+      font-size: 18px;
+    }
+    
+    .order-info-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .order-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .info-item {
+      text-align: center;
+    }
+    
+    .info-label {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .info-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111;
+    }
+    
+    .info-value.highlight {
+      color: #e53935;
+    }
+    
+    .progress-container {
+      background: white;
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .progress-bar-container {
+      height: 10px;
+      background: #e9ecef;
+      border-radius: 10px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #e53935, #ff6b6b);
+      border-radius: 10px;
+      width: ${progressPercentage}%;
+      transition: width 0.5s ease;
+    }
+    
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-top: -25px;
+    }
+    
+    .progress-step {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .step-dot {
+      width: 20px;
+      height: 20px;
+      background: #e9ecef;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .step-dot.completed {
+      background: #e53935;
+    }
+    
+    .step-dot.active {
+      background: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.3);
+    }
+    
+    .step-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111;
+    }
+    
+    .step-date {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .timeline-container {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .timeline-title {
+      font-size: 20px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e9ecef;
+    }
+    
+    .timeline-event {
+      position: relative;
+      padding-bottom: 30px;
+    }
+    
+    .timeline-event:last-child {
+      padding-bottom: 0;
+    }
+    
+    .timeline-dot {
+      position: absolute;
+      left: -30px;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #e53935;
+    }
+    
+    .timeline-dot.completed {
+      background: #e53935;
+    }
+    
+    .timeline-content {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    
+    .timeline-status {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 5px;
+      color: #111;
+    }
+    
+    .timeline-description {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .timeline-date {
+      color: #999;
+      font-size: 12px;
+    }
+    
+    .order-details {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .order-items {
+      margin-top: 20px;
+    }
+    
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    
+    .item-details {
+      flex: 1;
+    }
+    
+    .item-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .item-price {
+      color: #e53935;
+      font-weight: 600;
+    }
+    
+    .item-quantity {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .shipping-info {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+       
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 40px 0;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #e53935;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #c62828;
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+    }
+    
+    .btn-outline:hover {
+      background: #e53935;
+      color: white;
+    }
+    
+    .estimated-delivery {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .progress-steps {
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+      }
+      
+      .progress-step {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-align: left;
+      }
+      
+      .step-dot {
+        margin: 0;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .order-item {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -9993,7 +16437,18 @@ app.get("/admin/products", (req, res) => {
 <head>
     <title>Products Management | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        a { text-decoration: none; color: #111; }
+        a:hover { color: #e53935; }
+        button { cursor: pointer; }
+        
+        .products-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-primary { background: #e53935; color: white; }
+    </style>
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -10065,7 +16520,307 @@ app.get("/admin/orders", (req, res) => {
 <head>
     <title>Orders Management | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        a { text-decoration: none; color: #111; }
+        a:hover { color: #e53935; }
+        button { cursor: pointer; }
+        
+        .orders-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-size: 32px;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #e53935;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        
+        .filter-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .filter-select {
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #e53935;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #e53935;
+            border: 2px solid #e53935;
+        }
+        
+        .btn-outline:hover {
+            background: #e53935;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .orders-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #212529;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .orders-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+        
+        .orders-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .page-btn.active {
+            background: #e53935;
+            color: white;
+            border-color: #e53935;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .customer-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .customer-email {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        @media (max-width: 1024px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+            
+            .orders-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
     <!-- Tracking Modal -->
 <div id="trackingModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
     <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
@@ -10265,7 +17020,7 @@ app.get("/admin/orders", (req, res) => {
                     <th>Payment</th>
                     <th>Status</th>
                     <th>Actions</th>
-                </tr>
+                 </tr>
             </thead>
             <tbody>
    ${filteredOrders.map(order => {
@@ -10330,29 +17085,29 @@ app.get("/admin/orders", (req, res) => {
     });
     
     return `
-    <tr>
+     <tr>
         <td style="font-weight: 600;" title="Full ID: ${order.id}">
             ${displayOrderId}
-        </td>
-        <td>
+         </td>
+         <td>
             <div>${orderDate}</div>
             ${orderTime ? `<small style="color: #666;">${orderTime}</small>` : ''}
-        </td>
-        <td>
+         </td>
+         <td>
             <div class="customer-info">
                 <span class="customer-name">${order.customerName || 'Guest'}</span>
                 <span class="customer-email">${order.email || ''}</span>
                 <span class="customer-email">${order.phone || ''}</span>
             </div>
-        </td>
-        <td>
+         </td>
+         <td>
             <div style="font-weight: 600;">${itemCount} items</div>
             <small style="color: #666;">${order.items ? order.items.length : 0} products</small>
-        </td>
+         </td>
         <td style="font-weight: 600; color: #e53935; font-size: 18px;">
             ₹${totalAmount}
-        </td>
-        <td>
+         </td>
+         <td>
             <span class="status-badge ${order.paymentStatus === 'completed' ? 'status-completed' : 'status-pending'}">
                 ${order.paymentMethod === 'cod' ? 'COD' : 
                   order.paymentMethod === 'card' ? 'Card' :
@@ -10361,8 +17116,8 @@ app.get("/admin/orders", (req, res) => {
             </span>
             <br>
             <small style="color: #666;">${order.paymentStatus || 'pending'}</small>
-        </td>
-        <td>
+         </td>
+         <td>
             <select class="status-badge" onchange="updateOrderStatus('${order.id}', this.value)" 
                     style="padding: 5px; border-radius: 20px; border: 2px solid #ddd; background: white;">
                 <option value="pending" ${order.orderStatus === 'pending' ? 'selected' : ''}>Pending</option>
@@ -10370,9 +17125,9 @@ app.get("/admin/orders", (req, res) => {
                 <option value="completed" ${order.orderStatus === 'completed' ? 'selected' : ''}>Completed</option>
                 <option value="cancelled" ${order.orderStatus === 'cancelled' ? 'selected' : ''}>Cancelled</option>
             </select>
-        </td>
+         </td>
+         <td>
         <td>
-       <td>
     <div class="action-buttons">
         <a href="/order/${order.id}" class="btn btn-sm btn-primary" title="View Order">
             <i class="fas fa-eye"></i>
@@ -10389,11 +17144,11 @@ app.get("/admin/orders", (req, res) => {
 </button>
     </div>
 </td>
-    </tr>
+     </tr>
     `;
 }).join('')}
             </tbody>
-        </table>
+         </table>
         
         ${filteredOrders.length > 20 ? `
         <div class="pagination">
@@ -10586,7 +17341,18 @@ app.get("/admin/sliders", (req, res) => {
 <head>
     <title>Sliders Management | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        a { text-decoration: none; color: #111; }
+        a:hover { color: #e53935; }
+        button { cursor: pointer; }
+        
+        .sliders-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-primary { background: #e53935; color: white; }
+    </style>
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -10619,7 +17385,18 @@ app.get("/admin/settings", (req, res) => {
 <head>
     <title>Settings | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        a { text-decoration: none; color: #111; }
+        a:hover { color: #e53935; }
+        button { cursor: pointer; }
+        
+        .settings-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-primary { background: #e53935; color: white; }
+    </style>
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -10724,7 +17501,171 @@ app.get("/wishlist", (req, res) => {
 <head>
   <title>My Wishlist | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .wishlist-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .wishlist-header {
+      text-align: center;
+      margin: 50px 0;
+    }
+    
+    .wishlist-content {
+      min-height: 400px;
+    }
+    
+    .empty-wishlist {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .wishlist-item {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+      position: relative;
+    }
+    
+    .wishlist-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .item-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .item-details {
+      padding: 20px;
+    }
+    
+    .item-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .remove-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .move-to-cart-btn {
+      flex: 1;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .view-btn {
+      flex: 1;
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+    }
+    
+    .wishlist-stats {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+    
+    .stat-number {
+      font-size: 36px;
+      font-weight: bold;
+      color: #e53935;
+      margin-bottom: 10px;
+    }
+    
+    .share-wishlist {
+      text-align: center;
+      margin: 40px 0;
+      padding: 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 15px;
+      color: white;
+    }
+    
+    .share-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .share-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: white;
+      color: #333;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -10997,7 +17938,287 @@ app.get("/products/filter", (req, res) => {
 <head>
   <title>Filter Products | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: #111; }
+    a:hover { color: #e53935; }
+    button { cursor: pointer; }
+    
+    .filter-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      gap: 30px;
+    }
+    
+    .filter-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      height: fit-content;
+    }
+    
+    .filter-section {
+      margin-bottom: 30px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .filter-section:last-child {
+      border-bottom: none;
+    }
+    
+    .filter-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .clear-filters {
+      color: #e53935;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .filter-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .price-slider {
+      margin-top: 20px;
+    }
+    
+    .price-inputs {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .price-input {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .apply-filters {
+      width: 100%;
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    
+    .products-main {
+      flex: 1;
+    }
+    
+    .products-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .sort-options select {
+      padding: 10px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .results-count {
+      color: #666;
+    }
+    
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .product-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .product-details {
+      padding: 20px;
+    }
+    
+    .product-category {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .product-price {
+      font-size: 20px;
+      color: #e53935;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .product-stock {
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    
+    .in-stock {
+      color: #4caf50;
+    }
+    
+    .out-stock {
+      color: #f44336;
+    }
+    
+    .product-sizes {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    
+    .size-tag {
+      padding: 3px 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .product-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .view-btn, .wishlist-btn, .cart-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .view-btn {
+      background: #111;
+      color: white;
+    }
+    
+    .wishlist-btn {
+      background: #f8f9fa;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+    
+    .cart-btn {
+      background: #e53935;
+      color: white;
+      border: none;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      grid-column: 1 / -1;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 40px;
+    }
+    
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+    }
+    
+    .page-btn.active {
+      background: #e53935;
+      color: white;
+      border-color: #e53935;
+    }
+    
+    @media (max-width: 1024px) {
+      .filter-container {
+        flex-direction: column;
+      }
+      
+      .filter-sidebar {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .products-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+  </style>
 </head>
 <body>
   ${getHeader(req)}
@@ -11298,6 +18519,7 @@ app.use((req, res, next) => {
     <html>
     <head>
       <title>Page Not Found | Sports India</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -11340,6 +18562,7 @@ app.use((err, req, res, next) => {
     <html>
     <head>
       <title>Error | Sports India</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
@@ -11371,5 +18594,4 @@ app.listen(PORT, () => {
   console.log(`✅ All security features have been removed for development`);
   console.log(`📝 Admin login: admin / admin123`);
   console.log(`🔗 http://localhost:${PORT}`);
-
 });
