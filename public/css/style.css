@@ -1,4 +1,67 @@
-/* ===== RESET ===== */
+/* GLOBAL FIX */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 15px;
+}
+
+/* FIX HEADER BREAK */
+.main-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* FIX IMAGE OVERFLOW */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* FIX BIG TEXT */
+h1 {
+  font-size: 26px;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 40px;
+  }
+}
+
+/* FORM FIX */
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+/* FORM WRAPPER */
+.form-box {
+  max-width: 400px;
+  margin: auto;
+}
+
+/* BUTTON FIX */
+button, .add-to-cart-btn {
+  width: 100%;
+}/* ===== RESET ===== */
 * {
   margin: 0;
   padding: 0;
