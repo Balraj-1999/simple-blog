@@ -662,6 +662,18 @@ function getFooter() {
     </script>
     
     <style>
+      /* ===== QUICK FIX FOR MOBILE ===== */
+      * {
+          box-sizing: border-box;
+      }
+      html, body {
+          width: 100%;
+          overflow-x: hidden;
+      }
+      img, video, iframe, .hero-slider, .product-card-modern, .slider-slide {
+          max-width: 100%;
+          height: auto;
+      }
       :root {
         --theme-color: ${themeColor};
       }
