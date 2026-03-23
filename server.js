@@ -797,7 +797,7 @@ app.get("/", (req, res) => {
 <head>
   <title>Sports India - Premium Sports Gear</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -1404,7 +1404,7 @@ app.get("/login", (req, res) => {
 <head>
   <title>Admin Login | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <div class="login-container">
@@ -1544,7 +1544,7 @@ app.get("/posts", (req, res) => {
 <head>
   <title>Manage Products | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -1754,7 +1754,7 @@ app.get("/add-product", (req, res) => {
 <head>
   <title>${isEditMode ? 'Edit Product' : 'Add Product'} | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -2363,7 +2363,7 @@ app.get("/about", (req, res) => {
 <head>
   <title>About Us | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -2544,7 +2544,7 @@ app.get("/contact", (req, res) => {
 <head>
   <title>Contact Us | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -2793,7 +2793,7 @@ app.get("/privacy-policy", (req, res) => {
 <head>
   <title>Privacy Policy | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -3028,7 +3028,7 @@ app.get("/terms", (req, res) => {
 <head>
   <title>Terms & Conditions | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -3319,7 +3319,7 @@ app.get("/admin", (req, res) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+    <link rel="stylesheet" href="/css/style.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -3581,7 +3581,7 @@ app.get("/admin/add-slider", (req, res) => {
 <head>
   <title>${isEditMode ? 'Edit Slider' : 'Add Slider'} | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -3779,7 +3779,7 @@ app.get("/admin/sliders", (req, res) => {
 <head>
   <title>Manage Sliders | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -3926,7 +3926,7 @@ app.get("/product/:slug", (req, res) => {
 <head>
   <title>${product.name} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -4408,7 +4408,7 @@ app.get("/admin/analytics", (req, res) => {
 <head>
   <title>Analytics Dashboard | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -4917,7 +4917,7 @@ app.get("/admin/settings", (req, res) => {
 <head>
   <title>Settings | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -5510,7 +5510,7 @@ app.get("/admin/manage-sections", (req, res) => {
 <head>
     <title>Manage Sections | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -5694,7 +5694,7 @@ app.get("/admin/categories", (req, res) => {
 <head>
   <title>Manage Categories | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getAdminHeader(req)}
@@ -6211,7 +6211,7 @@ app.get("/admin/customers", (req, res) => {
 <head>
   <title>Customers | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -6683,7 +6683,7 @@ app.get("/admin/edit-customer/:id", (req, res) => {
 <head>
   <title>Edit Customer | Sports India Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getAdminHeader(req)}
@@ -6879,7 +6879,7 @@ app.get("/product/:slug/reviews", (req, res) => {
 <head>
   <title>Reviews - ${product.name} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -7118,7 +7118,7 @@ app.get("/cart", (req, res) => {
 <head>
   <title>Shopping Cart | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -7290,7 +7290,7 @@ app.get("/checkout", (req, res) => {
 <head>
   <title>Checkout | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -7595,7 +7595,7 @@ app.get("/order/:orderId", (req, res) => {
 <head>
   <title>Order #${order.id} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -8032,7 +8032,7 @@ app.get("/login-user", (req, res) => {
 <head>
   <title>Login | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -8202,7 +8202,7 @@ app.get("/forgot-password", (req, res) => {
 <head>
   <title>Forgot Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -8335,7 +8335,7 @@ app.get("/reset-password", (req, res) => {
 <head>
   <title>Reset Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -8485,7 +8485,7 @@ app.get("/register", (req, res) => {
 <head>
   <title>Register | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -8725,7 +8725,7 @@ app.get("/verify-otp",(req,res)=>{
   <title>Email Verification | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-<link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+<link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
@@ -8847,7 +8847,7 @@ app.get("/profile", (req, res) => {
 <head>
   <title>My Profile | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -8979,7 +8979,7 @@ app.get("/update-profile", (req, res) => {
 <head>
   <title>Update Profile | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -9141,7 +9141,7 @@ app.get("/change-password", (req, res) => {
 <head>
   <title>Change Password | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -9271,7 +9271,7 @@ app.get("/orders", (req, res) => {
 <head>
   <title>My Orders | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -9377,7 +9377,7 @@ app.get("/order-success", (req, res) => {
 <head>
   <title>Order Success | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -9410,7 +9410,7 @@ app.get("/addresses", (req, res) => {
 <head>
   <title>My Addresses | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -9661,7 +9661,7 @@ app.get("/track-order/:orderId", (req, res) => {
 <head>
   <title>Track Order #${order.id} | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -9993,7 +9993,7 @@ app.get("/admin/products", (req, res) => {
 <head>
     <title>Products Management | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -10065,7 +10065,7 @@ app.get("/admin/orders", (req, res) => {
 <head>
     <title>Orders Management | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+    <link rel="stylesheet" href="/css/style.css">
     <!-- Tracking Modal -->
 <div id="trackingModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
     <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
@@ -10586,7 +10586,7 @@ app.get("/admin/sliders", (req, res) => {
 <head>
     <title>Sliders Management | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -10619,7 +10619,7 @@ app.get("/admin/settings", (req, res) => {
 <head>
     <title>Settings | Sports India Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     ${getAdminHeader(req)}
@@ -10724,7 +10724,7 @@ app.get("/wishlist", (req, res) => {
 <head>
   <title>My Wishlist | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
@@ -10997,7 +10997,7 @@ app.get("/products/filter", (req, res) => {
 <head>
   <title>Filter Products | Sports India</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/css/style.css?v=${Date.now()}">
+ <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   ${getHeader(req)}
